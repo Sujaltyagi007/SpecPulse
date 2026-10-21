@@ -1,0 +1,59 @@
+/* Base shared by every route. Public site styles live in app/(site)/site.css, admin styles in app/admin/admin.css. */
+
+:root {
+  --bg: #ffffff;
+  --fg: #0e1116;
+  --muted: #6b7280;
+  --border: #e7e9ee;
+  --surface: #f7f8fa;
+  --accent: #4f46e5;
+  --accent-fg: #ffffff;
+  --ok: #059669;
+  --warn: #9a6700;
+  --err: #cf222e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0a0c10;
+    --fg: #eef0f4;
+    --muted: #8b92a0;
+    --border: #222733;
+    --surface: #12151c;
+    --accent: #818cf8;
+    --accent-fg: #0a0c10;
+    --ok: #34d399;
+    --warn: #d29922;
+    --err: #f85149;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+a { color: var(--accent); }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.03em; }
+td { overflow-wrap: anywhere; }
+
+input, select, textarea {
+  font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; width: 100%;
+}
+
+.muted { color: var(--muted); }
+.badge { display: inline-block; font-size: 0.75rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); }
+.badge.ok { color: var(--ok); border-color: var(--ok); }
+.badge.warn { color: var(--warn); border-color: var(--warn); }
+.badge.err { color: var(--err); border-color: var(--err); }
+.issues { margin: 4px 0 0; padding-left: 18px; font-size: 0.875rem; }
+.issues .err { color: var(--err); }
+.issues .warn { color: var(--warn); }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }

@@ -1,0 +1,300 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductStatus {
+  draft
+  review
+  approved
+  published
+  archived
+}
+
+enum DataSource {
+  serpapi
+  apify
+  manual
+}
+
+enum PageType {
+  product
+  comparison
+  roundup
+}
+
+model Category {
+  id         Int                 @id @default(autoincrement())
+  slug       String              @unique
+  name       String
+  createdAt  DateTime            @default(now()) @map("created_at")
+  specFields CategorySpecField[]
+  products   Product[]
+  roundups   Roundup[]
+
+  @@map("categories")
+}
+
+model CategorySpecField {
+  categoryId Int      @map("category_id")
+  key        String
+  label      String
+  unit       String?
+  required   Boolean  @default(false)
+  sortOrder  Int      @default(0) @map("sort_order")
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([categoryId, key])
+  @@map("category_spec_fields")
+}
+
+model Product {
+  id           Int           @id @default(autoincrement())
+  categoryId   Int           @map("category_id")
+  slug         String        @unique
+  brand        String
+  model        String
+  title        String
+  gtin         String?       @unique
+  mpn          String?
+  imageUrl     String?       @map("image_url")
+  status       ProductStatus @default(draft)
+  reviewedBy   String?       @map("reviewed_by")
+  reviewedAt   DateTime?     @map("reviewed_at")
+  publishedAt  DateTime?     @map("published_at")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  category     Category      @relation(fields: [categoryId], references: [id])
+  specs        ProductSpec[]
+  offers       Offer[]
+  comparisonsA Comparison[]  @relation("ComparisonA")
+  comparisonsB Comparison[]  @relation("ComparisonB")
+  roundupItems RoundupItem[]
+
+  @@index([categoryId, status])
+  @@map("products")
+}
+
+model Comparison {
+  id          Int           @id @default(autoincrement())
+  slug        String        @unique
+  productAId  Int           @map("product_a_id")
+  productBId  Int           @map("product_b_id")
+  status      ProductStatus @default(draft)
+  publishedAt DateTime?     @map("published_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  productA    Product       @relation("ComparisonA", fields: [productAId], references: [id], onDelete: Cascade)
+  productB    Product       @relation("ComparisonB", fields: [productBId], references: [id], onDelete: Cascade)
+
+  @@unique([productAId, productBId])
+  @@map("comparisons")
+}
+
+model Roundup {
+  id          Int           @id @default(autoincrement())
+  slug        String        @unique
+  categoryId  Int           @map("category_id")
+  title       String
+  useCase     String?       @map("use_case")
+  status      ProductStatus @default(draft)
+  publishedAt DateTime?     @map("published_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  category    Category      @relation(fields: [categoryId], references: [id])
+  items       RoundupItem[]
+
+  @@map("roundups")
+}
+
+model RoundupItem {
+  roundupId Int     @map("roundup_id")
+  productId Int     @map("product_id")
+  rank      Int
+  label     String?
+  roundup   Roundup @relation(fields: [roundupId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([roundupId, productId])
+  @@map("roundup_items")
+}
+
+model LlmCall {
+  id           Int      @id @default(autoincrement())
+  purpose      String
+  provider     String
+  model        String
+  keyName      String   @map("key_name")
+  ok           Boolean
+  error        String?
+  inputTokens  Int?     @map("input_tokens")
+  outputTokens Int?     @map("output_tokens")
+  latencyMs    Int      @map("latency_ms")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("llm_calls")
+}
+
+model ProductSpec {
+  productId  Int        @map("product_id")
+  key        String
+  value      String
+  source     DataSource @default(manual)
+  sourceRef  String?    @map("source_ref")
+  verifiedAt DateTime?  @map("verified_at")
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([productId, key])
+  @@map("product_specs")
+}
+
+model Retailer {
+  id               Int               @id @default(autoincrement())
+  slug             String            @unique
+  name             String
+  domain           String?           @unique
+  affiliateProgram AffiliateProgram?
+  offers           Offer[]
+
+  @@map("retailers")
+}
+
+model AffiliateProgram {
+  retailerId  Int      @id @map("retailer_id")
+  network     String
+  urlTemplate String   @map("url_template")
+  tag         String?
+  active      Boolean  @default(true)
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  retailer    Retailer @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+
+  @@map("affiliate_programs")
+}
+
+model Offer {
+  id         Int            @id @default(autoincrement())
+  productId  Int            @map("product_id")
+  retailerId Int            @map("retailer_id")
+  source     DataSource
+  sourceUrl  String         @map("source_url")
+  externalId String?        @map("external_id")
+  priceCents Int?           @map("price_cents")
+  currency   String         @default("USD") @db.Char(3)
+  inStock    Boolean?       @map("in_stock")
+  lastSeenAt DateTime       @default(now()) @map("last_seen_at")
+  product    Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  retailer   Retailer       @relation(fields: [retailerId], references: [id])
+  history    PriceHistory[]
+
+  @@unique([productId, retailerId])
+  @@map("offers")
+}
+
+model PriceHistory {
+  id         BigInt   @id @default(autoincrement())
+  offerId    Int      @map("offer_id")
+  priceCents Int?     @map("price_cents")
+  inStock    Boolean? @map("in_stock")
+  observedAt DateTime @default(now()) @map("observed_at")
+  offer      Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@index([offerId, observedAt(sort: Desc)])
+  @@map("price_history")
+}
+
+model PageContent {
+  id               Int           @id @default(autoincrement())
+  pageType         PageType      @map("page_type")
+  pageKey          String        @map("page_key")
+  summary          String?
+  bodyMd           String?       @map("body_md")
+  faq              Json          @default("[]")
+  generator        String?
+  promptVersion    String?       @map("prompt_version")
+  status           ProductStatus @default(draft)
+  validationErrors Json          @default("[]") @map("validation_errors")
+  reviewedBy       String?       @map("reviewed_by")
+  reviewedAt       DateTime?     @map("reviewed_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  @@unique([pageType, pageKey])
+  @@map("page_content")
+}
+
+model IngestRun {
+  id          Int       @id @default(autoincrement())
+  job         String
+  startedAt   DateTime  @default(now()) @map("started_at")
+  finishedAt  DateTime? @map("finished_at")
+  itemsOk     Int       @default(0) @map("items_ok")
+  itemsFailed Int       @default(0) @map("items_failed")
+  apiCalls    Int       @default(0) @map("api_calls")
+  error       String?
+
+  @@map("ingest_runs")
+}
+
+/// Per-login admin profile and dashboard appearance. Keyed by the basic-auth username.
+model AdminProfile {
+  username    String   @id
+  displayName String?  @map("display_name")
+  /// Job title / role shown under the name
+  role        String?
+  /// Small square image as a data: URL (resized client-side to 160px)
+  avatar      String?
+  /// Appearance settings; shape in lib/admin-theme.ts
+  theme       Json     @default("{}")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_profiles")
+}
+
+enum ArticleStatus {
+  generating
+  failed
+  review
+  published
+  archived
+}
+
+/// Editorial article: researched and drafted by AI, reviewed and published by a person.
+model Article {
+  id                Int           @id @default(autoincrement())
+  slug              String        @unique
+  /// What the editor asked for (or the topic the AI chose when left blank)
+  topic             String
+  title             String?
+  summary           String?
+  /// Restricted markdown: ## / ### headings, paragraphs, "- " lists, **bold**, [n] source citations
+  bodyMd            String?       @map("body_md")
+  faq               Json          @default("[]")
+  /// [{ title, url }] in citation order: [1] is sources[0]
+  sources           Json          @default("[]")
+  /// Catalog products the article mentions, linked from the page
+  relatedProductIds Int[]         @map("related_product_ids")
+  heroImage         Bytes?        @map("hero_image")
+  heroImageType     String?       @map("hero_image_type")
+  heroImageAlt      String?       @map("hero_image_alt")
+  imagePrompt       String?       @map("image_prompt")
+  status            ArticleStatus @default(generating)
+  /// Current generation step: topic | research | writing | image | checks
+  progress          String?
+  error             String?
+  validationErrors  Json          @default("[]") @map("validation_errors")
+  warnings          Json          @default("[]")
+  generator         String?
+  promptVersion     String?       @map("prompt_version")
+  createdBy         String?       @map("created_by")
+  reviewedBy        String?       @map("reviewed_by")
+  publishedAt       DateTime?     @map("published_at")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  @@index([status, publishedAt])
+  @@map("articles")
+}
