@@ -45,33 +45,25 @@ export default async function SearchPage({ searchParams }: Props) {
           {results.products.length > 0 && (
             <section>
               <SectionHeader title={`Products (${results.products.length})`} />
-              <div className="product-grid">
-                {results.products.map((p) => <ProductCard key={p.slug} p={p} />)}
-              </div>
+              <div className="product-grid">{results.products.map((p) => <ProductCard key={p.slug} p={p} />)} </div>
             </section>
           )}
           {results.comparisons.length > 0 && (
             <section>
               <SectionHeader title={`Comparisons (${results.comparisons.length})`} />
-              <div className="compare-grid">
-                {results.comparisons.map((c) => <ComparisonCard key={c.slug} c={c} />)}
-              </div>
+              <div className="compare-grid">{results.comparisons.map((c) => <ComparisonCard key={c.slug} c={c} />)} </div>
             </section>
           )}
           {results.roundups.length > 0 && (
             <section>
               <SectionHeader title={`Best picks (${results.roundups.length})`} />
-              <div className="roundup-grid">
-                {results.roundups.map((r) => <RoundupCard key={r.slug} r={r} />)}
-              </div>
+              <div className="roundup-grid">{results.roundups.map((r) => <RoundupCard key={r.slug} r={r} />)} </div>
             </section>
           )}
           {results.articles.length > 0 && (
             <section>
               <SectionHeader title={`Guides (${results.articles.length})`} />
-              <div className="article-grid">
-                {results.articles.map((a) => <ArticleCard key={a.slug} a={a} />)}
-              </div>
+              <div className="article-grid">{results.articles.map((a) => <ArticleCard key={a.slug} a={a} />)} </div>
             </section>
           )}
         </Fragment>

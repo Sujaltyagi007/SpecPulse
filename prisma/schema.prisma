@@ -294,7 +294,38 @@ model Article {
   publishedAt       DateTime?     @map("published_at")
   createdAt         DateTime      @default(now()) @map("created_at")
   updatedAt         DateTime      @updatedAt @map("updated_at")
+  /// Cover candidates from the last image run; the chosen one is copied into heroImage
+  images            ArticleImage[]
 
   @@index([status, publishedAt])
   @@map("articles")
+}
+
+/// A generated cover candidate. A vision model scores each one; the editor can swap the cover to any candidate.
+model ArticleImage {
+  id        Int      @id @default(autoincrement())
+  articleId Int      @map("article_id")
+  image     Bytes
+  imageType String   @map("image_type")
+  /// 0-10 from the vision model, null when scoring failed
+  score     Float?
+  /// The vision model's one-line reason for the score
+  notes     String?
+  chosen    Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId])
+  @@map("article_images")
+}
+
+/// Admin-panel overrides for env settings (API keys, image model, banner prompts). Secret values are encrypted
+/// (lib/settings.ts); a missing row means the .env value or the built-in default is used.
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedBy String?  @map("updated_by")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("app_settings")
 }

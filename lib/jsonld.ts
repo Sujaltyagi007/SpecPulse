@@ -1,13 +1,14 @@
-import { SITE_NAME, SITE_URL, productPath } from '@/lib/site';
+import { SITE_URL, productPath } from '@/lib/site';
 import type { FaqItem, ProductPageData } from '@/lib/products';
 
 export function productJsonLd(p: ProductPageData): Record<string, unknown> {
   const live = p.offers.filter((o) => o.live);
-  const prices = live.map((o) => o.priceCents!);
   const ld: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: p.title,
+    ...(p.summary && { description: p.summary }),
+    category: p.category.name,
     brand: { '@type': 'Brand', name: p.brand },
     model: p.model,
     url: SITE_URL + productPath(p.category.slug, p.slug),
@@ -17,18 +18,33 @@ export function productJsonLd(p: ProductPageData): Record<string, unknown> {
     additionalProperty: p.specs
       .filter((s) => s.verified)
       .map((s) => ({ '@type': 'PropertyValue', name: s.label, value: s.value, ...(s.unit && { unitText: s.unit }) })),
-    publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
   };
-  if (prices.length) {
-    ld.offers = {
-      '@type': 'AggregateOffer',
-      priceCurrency: live[0]!.currency,
-      lowPrice: (Math.min(...prices) / 100).toFixed(2),
-      highPrice: (Math.max(...prices) / 100).toFixed(2),
-      offerCount: live.length,
-    };
+  if (live.length) {
+    ld.offers = live.map((offer) => ({
+      '@type': 'Offer',
+      url: offer.url,
+      priceCurrency: offer.currency,
+      price: (offer.priceCents! / 100).toFixed(2),
+      ...(offer.inStock != null && {
+        availability: `https://schema.org/${offer.inStock ? 'InStock' : 'OutOfStock'}`,
+      }),
+      seller: { '@type': 'Organization', name: offer.retailer },
+    }));
   }
   return ld;
+}
+
+export function breadcrumbJsonLd(items: { name: string; path: string }[]): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: SITE_URL + item.path,
+    })),
+  };
 }
 
 export function faqJsonLd(page: { faq: FaqItem[] }): Record<string, unknown> | null {

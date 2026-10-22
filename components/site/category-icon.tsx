@@ -1,9 +1,5 @@
-import {
-  Camera, Cpu, Gamepad2, Headphones, Laptop, Monitor, Mouse, Router, Smartphone, Speaker, Tablet, Tv, Watch,
-  type LucideIcon,
-} from 'lucide-react';
+import { Camera, Cpu, Gamepad2, Headphones, Laptop, Monitor, Mouse, Router, Smartphone, Speaker, Tablet, Tv, Watch, type LucideIcon } from 'lucide-react';
 
-// First keyword found in the category slug wins; add a row to support a new category.
 const ICONS: [RegExp, LucideIcon][] = [
   [/earbud|headphone|headset|audio/, Headphones],
   [/phone/, Smartphone],

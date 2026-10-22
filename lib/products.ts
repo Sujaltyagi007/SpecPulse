@@ -33,6 +33,7 @@ export async function listPublishedProducts(opts: { categorySlug?: string; exclu
       updatedAt: p.updatedAt,
       publishedAt: p.publishedAt ?? p.updatedAt,
       bestPrice: best ? { cents: best.priceCents!, currency: best.currency } : null,
+      offerCount: live.length,
     };
   });
 }

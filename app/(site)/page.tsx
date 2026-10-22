@@ -1,17 +1,15 @@
-import { Fragment } from 'react/jsx-runtime';
 import { listPublishedProducts } from '@/lib/products';
-import { BadgeCheck, LineChart, Scale } from 'lucide-react';
 import { listPublishedArticles } from '@/lib/articles/queries';
 import { getSiteStats, listCategories, listComparisonCards, listRoundupCards, sortProducts } from '@/lib/catalog';
-import { ArticleCard, CategoryTile, ComparisonCard, EmptyState, ProductCard, RoundupCard, SectionHeader, TrendingHeroBanner } from '@/components/site';
+import { faqJsonLd, jsonLdString } from '@/lib/jsonld';
+import { ArticleCard } from '@/components/site';
+import {
+  CategoryRow, ClosingCta, ComparisonGrid, HomeHero, ProductRail, RoundupShowcase, SectionTitle, WhyBento, Wrap,
+  type CategorySpotlight,
+} from '@/components/site/home';
+import { BuyingHabits, HOME_FAQ, HomeFaq, PublishTimeline, SpecGlossary } from '@/components/site/home-content';
 
 export const revalidate = 3600;
-
-const STEPS = [
-  { icon: BadgeCheck, title: 'Specs verified by a person', text: 'Every spec is checked against manufacturer sources before a page goes live.' },
-  { icon: LineChart, title: 'Prices tracked daily', text: 'We re-check retailer prices every morning and keep the price history.' },
-  { icon: Scale, title: 'Compare side by side', text: 'Put two products head to head or read our ranked picks for your use.' },
-];
 
 export default async function HomePage() {
   const [products, categories, comparisons, roundups, articles, stats] = await Promise.all([
@@ -22,80 +20,115 @@ export default async function HomePage() {
     listPublishedArticles(3),
     getSiteStats(),
   ]);
-  const latest = sortProducts(products, 'newest').slice(0, 8);
+  const latest = sortProducts(products, 'newest').slice(0, 10);
 
+  // Each category's cheapest live price and a representative product image.
+  const spotlight: CategorySpotlight[] = categories.map((c) => {
+    const items = products.filter((p) => p.categorySlug === c.slug);
+    const cheapest = sortProducts(items, 'price-asc')[0];
+    return { ...c, from: cheapest?.bestPrice ?? null, imageUrl: items.find((p) => p.imageUrl)?.imageUrl ?? null };
+  });
+  const earbuds = categories.find((c) => c.slug === 'wireless-earbuds');
+
+  // .home-page opts <main> out of the shared container (see site.css); each band brings its own <Wrap>.
+  // Catalog sections (products, comparisons, best-of lists, guides) render only when they have published entries.
   return (
-    <Fragment>
-      <TrendingHeroBanner latestProducts={latest} featuredArticle={articles[0]} categories={categories} stats={stats} />
-      {categories.length > 0 && (
-        <section id="categories" className="anchor-section">
-          <SectionHeader title="Browse by category" sub="Explore verified specs and curated picks across consumer tech." />
-          <div className="category-grid">
-            {categories.map((c) => <CategoryTile key={c.slug} c={c} />)}
-          </div>
+    <div className="home-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd({ faq: HOME_FAQ })) }} />
+
+      <HomeHero categories={categories} stats={stats} />
+
+      {spotlight.length > 0 && (
+        <section id="categories" className="anchor-section border-t border-line py-16 sm:py-20">
+          <Wrap>
+            <h2 className="m-0 mb-8 text-center text-[clamp(1.5rem,3vw,2rem)] text-fg">Shop by category</h2>
+            <CategoryRow categories={spotlight} />
+          </Wrap>
         </section>
       )}
-      <section id="best" className="anchor-section">
-        <SectionHeader title="The Best in Tech" sub="Ranked shortlists and expert recommendations for common needs and budgets." href="/best" linkLabel="All best picks" />
-        {roundups.length === 0 ? (
-          <EmptyState title="No best-of lists published yet">
-            Ranked shortlists will appear here as soon as picks are verified by our editors.
-          </EmptyState>
-        ) : (
-          <div className="roundup-grid">
-            {roundups.map((r) => <RoundupCard key={r.slug} r={r} />)}
-          </div>
-        )}
+
+      <section id="why" className="pb-20 sm:pb-28">
+        <Wrap>
+          <SectionTitle title="Why SpecPulse." sub="Built for people who read the spec sheet." />
+          <WhyBento stats={stats} />
+        </Wrap>
       </section>
 
-      <section id="latest">
-        <SectionHeader title="Latest products" sub="Recently verified specifications with today's lowest retailer price." />
-        {latest.length === 0 ? (
-          <EmptyState title="No products yet">
-            New products appear here as soon as their specs are verified.
-          </EmptyState>
-        ) : (
-          <div className="product-grid">
-            {latest.map((p) => (
-              <ProductCard key={p.slug} p={p} />
-            ))}
-          </div>
-        )}
+      {latest.length > 0 && (
+        <section id="latest" className="bg-soft py-20 sm:py-28">
+          <Wrap>
+            <SectionTitle title="Just verified." sub="New on SpecPulse, with today's lowest price." href="/search" linkLabel="Search everything" />
+            <ProductRail products={latest} />
+          </Wrap>
+        </section>
+      )}
+
+      <section id="how-it-works" className="bg-soft py-20 sm:py-28">
+        <Wrap>
+          <SectionTitle title="From spec sheet to your screen." sub="Every product page passes the same four checks before it goes live." />
+          <PublishTimeline />
+        </Wrap>
       </section>
 
       {comparisons.length > 0 && (
-        <section id="compare">
-          <SectionHeader title="Popular comparisons" sub="Two products, every verified spec, side by side." href="/compare" linkLabel="All comparisons" />
-          <div className="compare-grid">
-            {comparisons.map((c) => <ComparisonCard key={c.slug} c={c} />)}
-          </div>
+        <section id="compare" className="pt-20 sm:pt-28">
+          <Wrap>
+            <SectionTitle title="Head to head." sub="Every verified spec, side by side." href="/compare" linkLabel="All comparisons" />
+            <ComparisonGrid comparisons={comparisons} />
+          </Wrap>
         </section>
       )}
 
-      <section id="how-it-works">
-        <SectionHeader title="How SpecPulse works" />
-        <ol className="steps">
-          {STEPS.map(({ icon: Icon, title, text }, i) => (
-            <li key={title}>
-              <span className="step-num">{String(i + 1).padStart(2, '0')}</span>
-              <span className="step-icon">
-                <Icon size={20} strokeWidth={1.75} />
-              </span>
-              <b>{title}</b>
-              <p>{text}</p>
-            </li>
-          ))}
-        </ol>
+      {roundups.length > 0 && (
+        <section id="best" className="anchor-section pt-20 sm:pt-28">
+          <Wrap>
+            <SectionTitle title="The best, ranked." sub="Shortlists for common needs and budgets." href="/best" linkLabel="All best picks" />
+            <RoundupShowcase roundups={roundups} />
+          </Wrap>
+        </section>
+      )}
+
+      <section id="specs" className="py-20 sm:py-28">
+        <Wrap>
+          <SectionTitle
+            title="Specs, explained."
+            sub="What each line on a wireless earbuds spec sheet means, and what to look for."
+            href={earbuds ? `/${earbuds.slug}` : undefined}
+            linkLabel="Browse wireless earbuds"
+          />
+          <SpecGlossary />
+        </Wrap>
+      </section>
+
+      <section id="habits" className="bg-warm py-20 sm:py-28">
+        <Wrap>
+          <BuyingHabits />
+        </Wrap>
       </section>
 
       {articles.length > 0 && (
-        <section id="guides">
-          <SectionHeader title="Latest guides" sub="Buying guides and explainers, checked by a person." href="/articles" linkLabel="All guides" />
-          <div className="article-grid">
-            {articles.map((a) => <ArticleCard key={a.slug} a={a} />)}
-          </div>
+        <section id="guides" className="pt-20 sm:pt-28">
+          <Wrap>
+            <SectionTitle title="Guides." sub="Buying guides and explainers, checked by a person." href="/articles" linkLabel="All guides" />
+            <div className="article-grid">
+              {articles.map((a) => <ArticleCard key={a.slug} a={a} />)}
+            </div>
+          </Wrap>
         </section>
       )}
-    </Fragment>
+
+      <section id="faq" className="py-20 sm:py-28">
+        <Wrap>
+          <h2 className="m-0 mb-8 text-center text-[clamp(1.75rem,4vw,2.75rem)] text-fg sm:mb-10">Questions, answered.</h2>
+          <HomeFaq />
+        </Wrap>
+      </section>
+
+      <section aria-label="Search" className="pb-4">
+        <Wrap>
+          <ClosingCta />
+        </Wrap>
+      </section>
+    </div>
   );
 }

@@ -47,12 +47,7 @@ export function updateCachedTabData<T>(key: string, updater: (prev: T) => T): vo
   }
 }
 
-export function useTabData<T>(tabKey: string, fetcher: () => Promise<T>,
-  options?: {
-    ttlMs?: number;
-    initialData?: T;
-  }
-) {
+export function useTabData<T>(tabKey: string, fetcher: () => Promise<T>, options?: { ttlMs?: number; initialData?: T; }) {
   const ttlMs = options?.ttlMs ?? 5 * 60 * 1000;
   const cached = tabCache.get(tabKey);
   const initialData = cached && !cached.isDirty && Date.now() - cached.timestamp < ttlMs ? (cached.data as T) : options?.initialData ?? null;
@@ -113,48 +108,29 @@ export function useTabData<T>(tabKey: string, fetcher: () => Promise<T>,
         }
         return null;
       }
-    },
-    [tabKey, fetcher, data]
+    }, [tabKey, fetcher, data]
   );
 
   useEffect(() => {
     isMountedRef.current = true;
     const currentEntry = tabCache.get(tabKey);
     const isStale = !currentEntry || currentEntry.isDirty || Date.now() - currentEntry.timestamp >= ttlMs;
-
-    if (isStale) {
-      fetchData(false);
-    } else if (currentEntry && currentEntry.data !== data) {
+    if (isStale) fetchData(false);
+    else if (currentEntry && currentEntry.data !== data) {
       setData(currentEntry.data as T);
       setIsLoading(false);
     }
-
-    return () => {
-      isMountedRef.current = false;
-    };
+    return () => { isMountedRef.current = false };
   }, [tabKey, fetchData, ttlMs]);
 
-  const updateData = useCallback(
-    (updater: (prev: T | null) => T) => {
-      setData((prev) => {
-        const next = updater(prev);
-        setCachedTabData(tabKey, next);
-        return next;
-      });
-    },
-    [tabKey]
-  );
+  const updateData = useCallback((updater: (prev: T | null) => T) => {
+    setData((prev) => {
+      const next = updater(prev);
+      setCachedTabData(tabKey, next);
+      return next;
+    });
+  }, [tabKey]);
 
-  const refresh = useCallback(() => {
-    return fetchData(true);
-  }, [fetchData]);
-
-  return {
-    data,
-    isLoading,
-    isRefreshing,
-    error,
-    refresh,
-    updateData,
-  };
+  const refresh = useCallback(() => { return fetchData(true) }, [fetchData]);
+  return { data, isLoading, isRefreshing, error, refresh, updateData };
 }

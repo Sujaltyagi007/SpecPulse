@@ -51,15 +51,9 @@ export default async function RoundupPage({ params }: Props) {
             <span className="pick-rank" aria-label={`Rank ${rank}`}>{rank}</span>
             <div className="pick-body">
               {label && <span className="chip">{label}</span>}
-              <Link href={productPath(product.category.slug, product.slug)} className="pick-title">
-                {product.title}
-              </Link>
+              <Link href={productPath(product.category.slug, product.slug)} className="pick-title">{product.title}</Link>
               <div className="pick-specs">
-                {product.specs
-                  .filter((s) => s.verified)
-                  .slice(0, 4)
-                  .map((s) => `${s.label}: ${s.value}${s.unit ? ` ${s.unit}` : ''}`)
-                  .join(' · ')}
+                {product.specs.filter((s) => s.verified).slice(0, 4).map((s) => `${s.label}: ${s.value}${s.unit ? ` ${s.unit}` : ''}`).join(' · ')}
               </div>
             </div>
             <div className="pick-cta">
@@ -68,7 +62,6 @@ export default async function RoundupPage({ params }: Props) {
           </li>
         ))}
       </ol>
-
       {page.bodyMd && <h2>Why these picks</h2>}
       <Prose text={page.bodyMd} />
       <Faq items={page.faq} />

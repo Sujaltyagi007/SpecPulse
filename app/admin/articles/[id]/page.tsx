@@ -10,9 +10,16 @@ export default async function ArticleEditorPage({ params }: { params: Promise<{ 
 
   const a = await prisma.article.findUnique({ where: { id }, omit: { heroImage: true } });
   if (!a) notFound();
-  const products = a.relatedProductIds.length
-    ? await prisma.product.findMany({ where: { id: { in: a.relatedProductIds } }, select: { id: true, title: true, status: true } })
-    : [];
+  const [products, covers] = await Promise.all([
+    a.relatedProductIds.length
+      ? prisma.product.findMany({ where: { id: { in: a.relatedProductIds } }, select: { id: true, title: true, status: true } })
+      : [],
+    prisma.articleImage.findMany({
+      where: { articleId: id },
+      select: { id: true, score: true, notes: true, chosen: true },
+      orderBy: [{ score: { sort: 'desc', nulls: 'last' } }, { id: 'asc' }],
+    }),
+  ]);
 
   return (
     <ArticleEditorClient
@@ -26,7 +33,9 @@ export default async function ArticleEditorPage({ params }: { params: Promise<{ 
         faq: (a.faq as { question: string; answer: string }[]) ?? [],
         sources: (a.sources as { title: string; url: string }[]) ?? [],
         heroImageAlt: a.heroImageAlt ?? '',
+        imagePrompt: a.imagePrompt ?? '',
         hasImage: !!a.heroImageType,
+        covers,
         status: a.status,
         progress: a.progress,
         error: a.error,

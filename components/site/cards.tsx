@@ -1,12 +1,11 @@
 import Link from 'next/link';
+import { CategoryIcon } from './category-icon';
 import { ArrowUpRight, BookOpen, Trophy } from 'lucide-react';
 import { formatDate, formatPrice, productPath } from '@/lib/site';
 import type { CategoryItem, ComparisonCardData, ProductListItem, RoundupCardData } from '@/lib/catalog';
-import { CategoryIcon } from './category-icon';
 
 function Thumb({ src, fallback, small }: { src: string | null; fallback: string; small?: boolean }) {
   return src ? (
-    // eslint-disable-next-line @next/next/no-img-element -- merchant images on arbitrary hosts
     <img src={src} alt="" loading="lazy" />
   ) : (
     <span className={`monogram${small ? ' monogram-sm' : ''}`} aria-hidden>
@@ -57,7 +56,6 @@ export function ArticleCard({ a }: { a: ArticleCardData }) {
     <Link href={`/articles/${a.slug}`} className="card article-card">
       <div className="card-media card-media-wide">
         {a.heroImageType ? (
-          // eslint-disable-next-line @next/next/no-img-element -- served by our own cached route
           <img src={`/articles/${a.slug}/cover?v=${a.updatedAt.getTime()}`} alt={a.heroImageAlt ?? ''} loading="lazy" />
         ) : (
           <span className="media-placeholder" aria-hidden>

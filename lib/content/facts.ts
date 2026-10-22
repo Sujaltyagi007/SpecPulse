@@ -26,8 +26,7 @@ async function productFacts(productId: number): Promise<ProductFacts> {
   });
   const order = new Map(p.category.specFields.map((f, i) => [f.key, i]));
   const labels = new Map(p.category.specFields.map((f) => [f.key, f]));
-  const specs = [...p.specs]
-    .sort((a, b) => (order.get(a.key) ?? 999) - (order.get(b.key) ?? 999))
+  const specs = [...p.specs].sort((a, b) => (order.get(a.key) ?? 999) - (order.get(b.key) ?? 999))
     .map((s) => {
       const f = labels.get(s.key);
       return { spec: f?.label ?? s.key, value: s.value, ...(f?.unit && { unit: f.unit }) };

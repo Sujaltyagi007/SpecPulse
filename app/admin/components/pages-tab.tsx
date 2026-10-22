@@ -25,7 +25,7 @@ export function PagesTab({ initialView }: { initialView: PagesView }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-5">
       <Segmented<PagesView>
         ariaLabel="Page type"
         value={view}

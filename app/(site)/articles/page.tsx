@@ -24,9 +24,7 @@ export default async function ArticlesIndex() {
           <p className="empty">No guides yet.</p>
         ) : (
           <div className="article-grid">
-            {articles.map((a) => (
-              <ArticleCard key={a.slug} a={a} />
-            ))}
+            {articles.map((a) => <ArticleCard key={a.slug} a={a} />)}
           </div>
         )}
       </div>

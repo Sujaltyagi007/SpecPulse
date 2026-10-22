@@ -1,7 +1,7 @@
-import { CalendarClock, ExternalLink, Info } from 'lucide-react';
-import { formatDate, formatPrice } from '@/lib/site';
 import { Fragment } from 'react/jsx-runtime';
+import { formatDate, formatPrice } from '@/lib/site';
 import type { FaqItem, ProductPageData } from '@/lib/products';
+import { CalendarClock, ExternalLink, Info } from 'lucide-react';
 
 export function Prose({ text }: { text: string | null }) {
   if (!text) return null;

@@ -41,14 +41,15 @@ export function AdminDashboardClient({
   }, [deleted]);
 
   return (
-    <div style={{ paddingBottom: 48 }}>
+    <div className="pb-12">
       <AnimatePresence mode="wait" initial={false}>
-        <motion.div key={tab}
+        <motion.div
+          key={tab}
           initial={{ opacity: 0, y: 16, scale: 0.99 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, transition: { duration: 0.12 } }}
           transition={softSpring}
-          style={{ paddingTop: tab === 'home' ? 0 : 28 }}
+          className={tab === 'home' ? 'pt-0' : 'pt-6'}
         >
           {tab === 'products' && <ProductsTab />}
           {tab === 'pages' && <PagesTab initialView={defaultView} />}

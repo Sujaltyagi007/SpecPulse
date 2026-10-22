@@ -16,8 +16,5 @@ export function buildAffiliateUrl(offer: LinkableOffer, program: AffiliateProgra
   if (tpl.includes('{external_id}') && !offer.externalId) return offer.sourceUrl;
   if (tpl.includes('{tag}') && !program.tag) return offer.sourceUrl;
 
-  return tpl
-    .replaceAll('{url}', encodeURIComponent(offer.sourceUrl))
-    .replaceAll('{external_id}', encodeURIComponent(offer.externalId ?? ''))
-    .replaceAll('{tag}', encodeURIComponent(program.tag ?? ''));
+  return tpl.replaceAll('{url}', encodeURIComponent(offer.sourceUrl)).replaceAll('{external_id}', encodeURIComponent(offer.externalId ?? '')).replaceAll('{tag}', encodeURIComponent(program.tag ?? ''));
 }

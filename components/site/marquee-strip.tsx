@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Flame, Sparkles, TrendingDown, ShieldCheck, Trophy, Zap } from 'lucide-react';
+import { Flame, TrendingDown, ShieldCheck, Trophy, Zap } from 'lucide-react';
 
 interface MarqueeItem {
   icon: React.ReactNode;
@@ -51,14 +51,8 @@ export function MarqueeStrip() {
   return (
     <div className="marquee-strip" role="region" aria-label="Trending tech news and updates">
       <div className="marquee-track">
-        {/* Render items twice to create seamless infinite loop */}
         {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, idx) => (
-          <Link
-            key={idx}
-            href={item.href}
-            className="marquee-item"
-            tabIndex={idx >= MARQUEE_ITEMS.length ? -1 : 0}
-          >
+          <Link key={idx} href={item.href} className="marquee-item" tabIndex={idx >= MARQUEE_ITEMS.length ? -1 : 0}>
             <span className={`marquee-badge ${item.badgeTone}`}>
               {item.icon}
               <span>{item.badge}</span>

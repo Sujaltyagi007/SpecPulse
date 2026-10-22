@@ -125,13 +125,13 @@ export function ComparisonsTab() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="flex flex-col gap-6">
       {/* Create Comparison Card */}
       <Card>
         <CardHeader>
           <div>
-            <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Plus size={18} style={{ color: 'var(--admin-accent)' }} />
+            <CardTitle className="flex items-center gap-2">
+              <Plus size={18} className="text-admin-accent" />
               Create Comparison
             </CardTitle>
             <CardDescription>
@@ -140,11 +140,11 @@ export function ComparisonsTab() {
           </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleCreate} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <div style={{ flex: '1 1 240px' }}>
-              <label className="admin-label">Product A</label>
+          <form onSubmit={handleCreate} className="flex flex-wrap items-end gap-3.5">
+            <div className="flex-1 min-w-[240px]">
+              <label className="admin-label block text-xs font-semibold text-admin-fg mb-1.5">Product A</label>
               <select
-                className="admin-select"
+                className="admin-select w-full"
                 required
                 value={productA}
                 onChange={(e) => setProductA(e.target.value)}
@@ -158,10 +158,10 @@ export function ComparisonsTab() {
               </select>
             </div>
 
-            <div style={{ flex: '1 1 240px' }}>
-              <label className="admin-label">Product B</label>
+            <div className="flex-1 min-w-[240px]">
+              <label className="admin-label block text-xs font-semibold text-admin-fg mb-1.5">Product B</label>
               <select
-                className="admin-select"
+                className="admin-select w-full"
                 required
                 value={productB}
                 onChange={(e) => setProductB(e.target.value)}
@@ -191,8 +191,8 @@ export function ComparisonsTab() {
       <Card>
         <CardHeader>
           <div>
-            <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <GitCompare size={18} style={{ color: 'var(--admin-accent)' }} />
+            <CardTitle className="flex items-center gap-2">
+              <GitCompare size={18} className="text-admin-accent" />
               All Comparisons ({data.comparisons.length})
             </CardTitle>
             <CardDescription>
@@ -212,70 +212,69 @@ export function ComparisonsTab() {
 
         <CardContent noPadding>
           {data.comparisons.length === 0 ? (
-            <div style={{ padding: 32 }}>
+            <div className="p-8">
               <EmptyState
-                icon={<GitCompare size={24} style={{ color: 'var(--admin-muted)' }} />}
+                icon={<GitCompare size={24} className="text-admin-muted" />}
                 title="No comparisons created yet"
                 description="Select two products above to generate your first product comparison."
               />
             </div>
           ) : (
-            <div className="admin-table-container">
-              <table className="admin-table">
+            <div className="admin-table-container w-full overflow-x-auto">
+              <table className="admin-table w-full text-left border-collapse">
                 <thead>
-                  <tr>
-                    <th>Comparison Pair</th>
-                    <th>Page Status</th>
-                    <th>Editorial Copy</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  <tr className="border-b border-admin-border-subtle">
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Comparison Pair</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Page Status</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Editorial Copy</th>
+                    <th className="py-3 px-4 text-right font-semibold text-xs text-admin-muted uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-admin-border-subtle">
                   {data.comparisons.map((c) => {
                     const isProcessing = actionLoadingId === c.id;
                     return (
-                      <tr key={c.id}>
-                        <td>
-                          <div style={{ fontWeight: 600 }}>
-                            {c.productA.title} <span className="admin-text-muted" style={{ fontWeight: 400 }}>vs</span> {c.productB.title}
+                      <tr key={c.id} className="hover:bg-admin-muted-bg/30 transition-colors">
+                        <td className="py-3.5 px-4">
+                          <div className="font-semibold text-sm text-admin-fg">
+                            {c.productA.title} <span className="text-admin-muted font-normal text-xs">vs</span> {c.productB.title}
                           </div>
-                          <div className="admin-text-xs admin-text-muted" style={{ marginTop: 2 }}>
-                            {c.slug}
+                          <div className="text-xs text-admin-muted mt-0.5 flex items-center gap-1.5">
+                            <span className="font-mono">{c.slug}</span>
                             {c.status === 'published' && (
                               <>
-                                {' · '}
+                                <span>·</span>
                                 <Link
                                   href={`/compare/${c.slug}`}
                                   target="_blank"
-                                  className="admin-external-link"
-                                  style={{ padding: 0 }}
+                                  className="text-admin-accent inline-flex items-center gap-1 hover:underline"
                                 >
-                                  View live <ExternalLink size={11} />
+                                  View live <ExternalLink size={10} />
                                 </Link>
                               </>
                             )}
                           </div>
                         </td>
 
-                        <td>
+                        <td className="py-3.5 px-4">
                           <StatusBadge status={c.status} />
                         </td>
 
-                        <td>
+                        <td className="py-3.5 px-4">
                           {c.pageCopy ? (
                             <Link
                               href={`/admin/content/${c.pageCopy.id}`}
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+                              className="inline-flex items-center gap-1.5 no-underline hover:opacity-85 transition-opacity"
                             >
                               <StatusBadge status={c.pageCopy.status} />
                             </Link>
                           ) : (
-                            <span className="admin-text-xs admin-text-muted">No copy generated</span>
+                            <span className="text-xs text-admin-muted">No copy generated</span>
                           )}
                         </td>
 
-                        <td style={{ textAlign: 'right' }}>
-                          <div className="admin-flex admin-items-center" style={{ justifyContent: 'flex-end', gap: 6 }}>
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
                             <GenerateButton
                               pageType="comparison"
                               pageKey={c.slug}
@@ -287,8 +286,7 @@ export function ComparisonsTab() {
                               <button
                                 type="button"
                                 disabled={isProcessing}
-                                className="admin-btn admin-btn-outline admin-btn-sm"
-                                style={{ color: 'var(--admin-destructive)' }}
+                                className="admin-btn admin-btn-ghost admin-btn-sm text-admin-destructive hover:bg-admin-destructive-subtle"
                                 onClick={() => handleUnpublish(c)}
                                 title="Unpublish page"
                               >

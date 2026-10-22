@@ -17,7 +17,7 @@ export function sortProducts(products: ProductListItem[], sort: SortKey): Produc
   const byPrice = (dir: 1 | -1) => (a: ProductListItem, b: ProductListItem) => {
     const x = priced(a);
     const y = priced(b);
-    if (x == null) return y == null ? 0 : 1; // unpriced always last
+    if (x == null) return y == null ? 0 : 1;
     if (y == null) return -1;
     return (x - y) * dir;
   };
@@ -94,7 +94,6 @@ export async function listRoundupCards(opts: { categorySlug?: string; productId?
 }
 export type RoundupCardData = Awaited<ReturnType<typeof listRoundupCards>>[number];
 
-/** Daily lowest in-stock price across all retailers, oldest first. */
 export async function getPriceHistory(productId: number, days = 90) {
   const since = new Date(Date.now() - days * 86_400_000);
   const rows = await prisma.priceHistory.findMany({

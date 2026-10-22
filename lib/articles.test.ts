@@ -68,6 +68,32 @@ test('SVG cover escapes the title and is deterministic', () => {
   const svg = Buffer.from(a.bytes).toString('utf8');
   assert.equal(a.type, 'image/svg+xml');
   assert.doesNotMatch(svg, /<script>/);
-  assert.match(svg, /&lt;script&gt; &amp;/);
+  assert.match(svg, /&lt;script&gt;/);
+  assert.match(svg, /&amp; &quot;quotes&quot;/);
   assert.equal(Buffer.from(svgCover('Same title').bytes).toString(), Buffer.from(svgCover('Same title').bytes).toString());
+});
+
+test('humanise guard keeps a pure rewording and rejects changed facts', async () => {
+  const { editRejection } = await import('@/lib/articles/humanize');
+  const ctx = { sourceCount: 2, researched: true };
+  const sections = [
+    { heading: 'Battery', body: 'The buds are rated for up to 8 hours [1]. The case adds 24 more [2]. '.repeat(4) },
+    { heading: 'Water', body: 'They carry an IPX4 rating for sweat and splashes [1]. '.repeat(4) },
+    { heading: 'Who it suits', body: 'Commuters who want long playback get the most from them [2]. '.repeat(4) },
+  ];
+  const original = { title: 'Earbuds battery life explained', summary: 'What the 8-hour rating means and how the case changes it for daily use.', sections, faq: [] };
+  const reworded = { ...original, sections: sections.map((s) => ({ ...s, body: s.body.replace('The buds are rated', 'You get a rated') })) };
+  assert.equal(editRejection(original, reworded, ctx), null);
+
+  const changedNumber = { ...original, sections: sections.map((s, i) => (i ? s : { ...s, body: s.body.replace('8 hours', '9 hours') })) };
+  assert.equal(editRejection(original, changedNumber, ctx), 'it changed a number');
+
+  const droppedCitation = { ...original, sections: sections.map((s, i) => (i === 1 ? { ...s, body: s.body.replace(/ \[1\]/, '') } : s)) };
+  assert.equal(editRejection(original, droppedCitation, ctx), 'it changed the citations');
+
+  const fewerSections = { ...original, sections: sections.slice(0, 2) };
+  assert.equal(editRejection(original, fewerSections, ctx), 'it changed the number of sections or FAQ items');
+
+  const testingClaim = { ...original, sections: sections.map((s, i) => (i === 2 ? { ...s, body: `We tested them on a commute. ${s.body}` } : s)) };
+  assert.match(editRejection(original, testingClaim, ctx) ?? '', /introduced check errors/);
 });

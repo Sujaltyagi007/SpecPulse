@@ -78,12 +78,12 @@ export function RoundupsTab() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
           <div>
-            <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Plus size={18} style={{ color: 'var(--admin-accent)' }} />
+            <CardTitle className="flex items-center gap-2">
+              <Plus size={18} className="text-admin-accent" />
               Create "Best Of" Roundup Guide
             </CardTitle>
             <CardDescription>
@@ -92,10 +92,10 @@ export function RoundupsTab() {
           </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleCreate} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-            <div style={{ flex: '1 1 200px' }}>
-              <label className="admin-label">Category</label>
-              <select className="admin-select" required value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+          <form onSubmit={handleCreate} className="flex flex-wrap items-end gap-3.5">
+            <div className="flex-1 min-w-[200px]">
+              <label className="admin-label block text-xs font-semibold text-admin-fg mb-1.5">Category</label>
+              <select className="admin-select w-full" required value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
                 <option value="">Select Category...</option>
                 {data.categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -105,16 +105,16 @@ export function RoundupsTab() {
               </select>
             </div>
 
-            <div style={{ flex: '2 1 280px' }}>
-              <label className="admin-label">Title</label>
-              <input type="text" className="admin-input" required placeholder="e.g. Best wireless earbuds for running" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <div className="flex-[2] min-w-[280px]">
+              <label className="admin-label block text-xs font-semibold text-admin-fg mb-1.5">Title</label>
+              <input type="text" className="admin-input w-full" required placeholder="e.g. Best wireless earbuds for running" value={title} onChange={(e) => setTitle(e.target.value)} />
             </div>
 
-            <div style={{ flex: '1 1 200px' }}>
-              <label className="admin-label">
-                Use Case <span className="admin-label-optional">(optional)</span>
+            <div className="flex-1 min-w-[200px]">
+              <label className="admin-label block text-xs font-semibold text-admin-fg mb-1.5">
+                Use Case <span className="admin-label-optional text-admin-muted font-normal text-xs">(optional)</span>
               </label>
-              <input type="text" className="admin-input" placeholder="e.g. for running" value={useCase} onChange={(e) => setUseCase(e.target.value)} />
+              <input type="text" className="admin-input w-full" placeholder="e.g. for running" value={useCase} onChange={(e) => setUseCase(e.target.value)} />
             </div>
 
             <button type="submit" disabled={isSubmitting || !categoryId || !title.trim()} className="admin-btn admin-btn-primary">
@@ -128,8 +128,8 @@ export function RoundupsTab() {
       <Card>
         <CardHeader>
           <div>
-            <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Award size={18} style={{ color: 'var(--admin-accent)' }} />
+            <CardTitle className="flex items-center gap-2">
+              <Award size={18} className="text-admin-accent" />
               All Roundup Guides ({data.roundups.length})
             </CardTitle>
             <CardDescription>
@@ -144,55 +144,55 @@ export function RoundupsTab() {
 
         <CardContent noPadding>
           {data.roundups.length === 0 ? (
-            <div style={{ padding: 32 }}>
-              <EmptyState icon={<Award size={24} style={{ color: 'var(--admin-muted)' }} />} title="No roundups created yet" description="Use the form above to create your first buyer's guide." />
+            <div className="p-8">
+              <EmptyState icon={<Award size={24} className="text-admin-muted" />} title="No roundups created yet" description="Use the form above to create your first buyer's guide." />
             </div>
           ) : (
-            <div className="admin-table-container">
-              <table className="admin-table">
+            <div className="admin-table-container w-full overflow-x-auto">
+              <table className="admin-table w-full text-left border-collapse">
                 <thead>
-                  <tr>
-                    <th>Roundup Guide</th>
-                    <th>Category</th>
-                    <th>Ranked Picks</th>
-                    <th>Status</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  <tr className="border-b border-admin-border-subtle">
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Roundup Guide</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Category</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Ranked Picks</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Status</th>
+                    <th className="py-3 px-4 text-right font-semibold text-xs text-admin-muted uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-admin-border-subtle">
                   {data.roundups.map((r) => (
-                    <tr key={r.id}>
-                      <td>
-                        <Link href={`/admin/roundups/${r.id}`} style={{ fontWeight: 600, color: 'var(--admin-fg)', textDecoration: 'none' }}>
+                    <tr key={r.id} className="hover:bg-admin-muted-bg/30 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <Link href={`/admin/roundups/${r.id}`} className="font-semibold text-sm text-admin-fg hover:text-admin-accent transition-colors no-underline">
                           {r.title}
                         </Link>
                         {r.useCase && (
-                          <div className="admin-text-xs admin-text-muted" style={{ marginTop: 2 }}>
+                          <div className="text-xs text-admin-muted mt-0.5">
                             Focus: {r.useCase}
                           </div>
                         )}
                         {r.status === 'published' && (
-                          <div style={{ marginTop: 2 }}>
-                            <Link href={`/best/${r.slug}`} target="_blank" className="admin-external-link" style={{ padding: 0 }}>
-                              View live <ExternalLink size={11} />
+                          <div className="mt-1">
+                            <Link href={`/best/${r.slug}`} target="_blank" className="text-admin-accent inline-flex items-center gap-1 text-xs hover:underline">
+                              View live <ExternalLink size={10} />
                             </Link>
                           </div>
                         )}
                       </td>
 
-                      <td className="admin-text-muted">{r.category.name}</td>
+                      <td className="py-3.5 px-4 text-xs text-admin-muted">{r.category.name}</td>
 
-                      <td>
-                        <span className="admin-badge admin-badge-draft">
+                      <td className="py-3.5 px-4">
+                        <span className="admin-badge admin-badge-draft inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-muted-bg text-admin-muted border border-admin-border">
                           {r.picksCount} {r.picksCount === 1 ? 'pick' : 'picks'}
                         </span>
                       </td>
 
-                      <td>
+                      <td className="py-3.5 px-4">
                         <StatusBadge status={r.status} />
                       </td>
 
-                      <td style={{ textAlign: 'right' }}>
+                      <td className="py-3.5 px-4 text-right">
                         <Link href={`/admin/roundups/${r.id}`} className="admin-btn admin-btn-secondary admin-btn-sm" title="Manage picks and copy">
                           <Edit3 size={13} />
                           Manage Picks

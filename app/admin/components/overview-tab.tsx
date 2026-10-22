@@ -52,14 +52,14 @@ export function OverviewTab() {
   const { counts, runs, llmUsage, totalProducts } = data;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div className="flex flex-col gap-6">
       {/* Top action row */}
-      <div className="admin-flex admin-items-center admin-justify-between" style={{ flexWrap: 'wrap', gap: 12 }}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0, color: 'var(--admin-fg)' }}>
+          <h2 className="text-xl font-bold text-admin-fg m-0">
             System Pulse & Metrics
           </h2>
-          <p className="admin-text-sm admin-text-muted" style={{ margin: '4px 0 0' }}>
+          <p className="text-xs text-admin-muted mt-1 mb-0">
             Product lifecycle breakdown, automated ingest history, and AI copy generation consumption
           </p>
         </div>
@@ -75,50 +75,50 @@ export function OverviewTab() {
       </div>
 
       {/* Stats Grid */}
-      <div className="admin-stats-grid">
-        <div className="admin-stat-card">
-          <div className="admin-stat-label">
+      <div className="admin-stats-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
+        <div className="admin-stat-card bg-admin-surface border border-admin-border rounded-admin-lg p-4 shadow-admin-sm flex flex-col gap-1.5">
+          <div className="admin-stat-label flex items-center justify-between text-xs text-admin-muted font-medium">
             <span>Total Catalog</span>
             <Layers size={14} />
           </div>
-          <AnimatedNumber value={totalProducts} className="admin-stat-value" />
-          <div className="admin-stat-subtext">Catalog products registered</div>
+          <AnimatedNumber value={totalProducts} className="admin-stat-value text-2xl font-bold tracking-tight text-admin-fg" />
+          <div className="admin-stat-subtext text-[0.6875rem] text-admin-muted">Catalog products registered</div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="admin-stat-label">
+        <div className="admin-stat-card bg-admin-surface border border-admin-border rounded-admin-lg p-4 shadow-admin-sm flex flex-col gap-1.5">
+          <div className="admin-stat-label flex items-center justify-between text-xs text-admin-muted font-medium">
             <span>In Review</span>
-            <span className="admin-badge-indicator" style={{ backgroundColor: 'var(--admin-warn)' }} />
+            <span className="admin-badge-indicator w-2 h-2 rounded-full bg-admin-warn" />
           </div>
-          <AnimatedNumber value={counts.review ?? 0} className="admin-stat-value" style={{ color: counts.review ? 'var(--admin-warn)' : undefined }} />
-          <div className="admin-stat-subtext">Awaiting editorial sign-off</div>
+          <AnimatedNumber value={counts.review ?? 0} className={`admin-stat-value text-2xl font-bold tracking-tight ${counts.review ? 'text-admin-warn' : 'text-admin-fg'}`} />
+          <div className="admin-stat-subtext text-[0.6875rem] text-admin-muted">Awaiting editorial sign-off</div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="admin-stat-label">
+        <div className="admin-stat-card bg-admin-surface border border-admin-border rounded-admin-lg p-4 shadow-admin-sm flex flex-col gap-1.5">
+          <div className="admin-stat-label flex items-center justify-between text-xs text-admin-muted font-medium">
             <span>Approved</span>
-            <span className="admin-badge-indicator" style={{ backgroundColor: 'var(--admin-ok)' }} />
+            <span className="admin-badge-indicator w-2 h-2 rounded-full bg-admin-ok" />
           </div>
-          <AnimatedNumber value={counts.approved ?? 0} className="admin-stat-value" />
-          <div className="admin-stat-subtext">Queued for paced publishing</div>
+          <AnimatedNumber value={counts.approved ?? 0} className="admin-stat-value text-2xl font-bold tracking-tight text-admin-fg" />
+          <div className="admin-stat-subtext text-[0.6875rem] text-admin-muted">Queued for paced publishing</div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="admin-stat-label">
+        <div className="admin-stat-card bg-admin-surface border border-admin-border rounded-admin-lg p-4 shadow-admin-sm flex flex-col gap-1.5">
+          <div className="admin-stat-label flex items-center justify-between text-xs text-admin-muted font-medium">
             <span>Published</span>
-            <CheckCircle2 size={14} style={{ color: 'var(--admin-ok)' }} />
+            <CheckCircle2 size={14} className="text-admin-ok" />
           </div>
-          <AnimatedNumber value={counts.published ?? 0} className="admin-stat-value" style={{ color: 'var(--admin-ok)' }} />
-          <div className="admin-stat-subtext">Live on canonical routes</div>
+          <AnimatedNumber value={counts.published ?? 0} className="admin-stat-value text-2xl font-bold tracking-tight text-admin-ok" />
+          <div className="admin-stat-subtext text-[0.6875rem] text-admin-muted">Live on canonical routes</div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="admin-stat-label">
+        <div className="admin-stat-card bg-admin-surface border border-admin-border rounded-admin-lg p-4 shadow-admin-sm flex flex-col gap-1.5">
+          <div className="admin-stat-label flex items-center justify-between text-xs text-admin-muted font-medium">
             <span>Drafts</span>
-            <span className="admin-badge-indicator" style={{ backgroundColor: 'var(--admin-muted)' }} />
+            <span className="admin-badge-indicator w-2 h-2 rounded-full bg-admin-muted" />
           </div>
-          <AnimatedNumber value={counts.draft ?? 0} className="admin-stat-value" />
-          <div className="admin-stat-subtext">Ingested / pending specs</div>
+          <AnimatedNumber value={counts.draft ?? 0} className="admin-stat-value text-2xl font-bold tracking-tight text-admin-fg" />
+          <div className="admin-stat-subtext text-[0.6875rem] text-admin-muted">Ingested / pending specs</div>
         </div>
       </div>
 
@@ -126,8 +126,8 @@ export function OverviewTab() {
       <Card>
         <CardHeader>
           <div>
-            <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Database size={17} style={{ color: 'var(--admin-accent)' }} />
+            <CardTitle className="flex items-center gap-2">
+              <Database size={17} className="text-admin-accent" />
               Recent Ingest Runs
             </CardTitle>
             <CardDescription>Price refresh and scraping jobs run by cron or scripts</CardDescription>
@@ -135,47 +135,47 @@ export function OverviewTab() {
         </CardHeader>
         <CardContent noPadding>
           {runs.length === 0 ? (
-            <div style={{ padding: 24 }}>
+            <div className="p-6">
               <EmptyState title="No Ingest Runs Recorded" description="Scheduled scraper or price refreshes will appear here." />
             </div>
           ) : (
-            <div className="admin-table-container">
-              <table className="admin-table">
+            <div className="admin-table-container w-full overflow-x-auto">
+              <table className="admin-table w-full text-left border-collapse">
                 <thead>
-                  <tr>
-                    <th>Job Name</th>
-                    <th>Started</th>
-                    <th>Success</th>
-                    <th>Failed</th>
-                    <th>SerpApi Calls</th>
-                    <th>Status / Error</th>
+                  <tr className="border-b border-admin-border-subtle">
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Job Name</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Started</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Success</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Failed</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">SerpApi Calls</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Status / Error</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-admin-border-subtle">
                   {runs.map((r) => (
-                    <tr key={r.id}>
-                      <td style={{ fontWeight: 600 }}>{r.job}</td>
-                      <td className="admin-text-muted">{formatDate(new Date(r.startedAt))}</td>
-                      <td>
-                        <span className="admin-badge admin-badge-ok">{r.itemsOk} items</span>
+                    <tr key={r.id} className="hover:bg-admin-muted-bg/30 transition-colors">
+                      <td className="py-3 px-4 font-semibold text-sm text-admin-fg">{r.job}</td>
+                      <td className="py-3 px-4 text-xs text-admin-muted">{formatDate(new Date(r.startedAt))}</td>
+                      <td className="py-3 px-4">
+                        <span className="admin-badge admin-badge-ok inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-ok-subtle text-admin-ok border border-admin-ok-border">{r.itemsOk} items</span>
                       </td>
-                      <td>
+                      <td className="py-3 px-4">
                         {r.itemsFailed > 0 ? (
-                          <span className="admin-badge admin-badge-err">{r.itemsFailed} failed</span>
+                          <span className="admin-badge admin-badge-err inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-destructive-subtle text-admin-destructive border border-admin-destructive-border">{r.itemsFailed} failed</span>
                         ) : (
-                          <span className="admin-text-muted">0</span>
+                          <span className="text-xs text-admin-muted">0</span>
                         )}
                       </td>
-                      <td>{r.apiCalls} calls</td>
-                      <td>
+                      <td className="py-3 px-4 text-xs text-admin-muted font-mono">{r.apiCalls} calls</td>
+                      <td className="py-3 px-4 text-xs">
                         {r.error ? (
-                          <span className="admin-badge admin-badge-err" title={r.error}>
+                          <span className="admin-badge admin-badge-err inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-destructive-subtle text-admin-destructive border border-admin-destructive-border" title={r.error}>
                             {r.error.slice(0, 32)}...
                           </span>
                         ) : r.finishedAt ? (
-                          <span className="admin-badge admin-badge-ok">completed</span>
+                          <span className="admin-badge admin-badge-ok inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-ok-subtle text-admin-ok border border-admin-ok-border">completed</span>
                         ) : (
-                          <span className="admin-badge admin-badge-warn">in progress</span>
+                          <span className="admin-badge admin-badge-warn inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-warn-subtle text-admin-warn border border-admin-warn-border">in progress</span>
                         )}
                       </td>
                     </tr>
@@ -191,8 +191,8 @@ export function OverviewTab() {
       <Card>
         <CardHeader>
           <div>
-            <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Cpu size={17} style={{ color: 'var(--admin-ok)' }} />
+            <CardTitle className="flex items-center gap-2">
+              <Cpu size={17} className="text-admin-ok" />
               LLM Usage (Last 7 Days)
             </CardTitle>
             <CardDescription>
@@ -202,39 +202,39 @@ export function OverviewTab() {
         </CardHeader>
         <CardContent noPadding>
           {llmUsage.length === 0 ? (
-            <div style={{ padding: 24 }}>
+            <div className="p-6">
               <EmptyState title="No LLM Calls In Last 7 Days" description="Generated page copy records will display usage here." />
             </div>
           ) : (
-            <div className="admin-table-container">
-              <table className="admin-table">
+            <div className="admin-table-container w-full overflow-x-auto">
+              <table className="admin-table w-full text-left border-collapse">
                 <thead>
-                  <tr>
-                    <th>Model (Key)</th>
-                    <th>Successful</th>
-                    <th>Failed</th>
-                    <th>Input Tokens</th>
-                    <th>Output Tokens</th>
-                    <th>Total Tokens</th>
+                  <tr className="border-b border-admin-border-subtle">
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Model (Key)</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Successful</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Failed</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Input Tokens</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Output Tokens</th>
+                    <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Total Tokens</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-admin-border-subtle">
                   {llmUsage.map((r) => (
-                    <tr key={r.key}>
-                      <td style={{ fontWeight: 600 }}>{r.label}</td>
-                      <td>
-                        <span className="admin-badge admin-badge-ok">{r.ok} calls</span>
+                    <tr key={r.key} className="hover:bg-admin-muted-bg/30 transition-colors">
+                      <td className="py-3 px-4 font-semibold text-sm text-admin-fg">{r.label}</td>
+                      <td className="py-3 px-4">
+                        <span className="admin-badge admin-badge-ok inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-ok-subtle text-admin-ok border border-admin-ok-border">{r.ok} calls</span>
                       </td>
-                      <td>
+                      <td className="py-3 px-4">
                         {r.failed > 0 ? (
-                          <span className="admin-badge admin-badge-err">{r.failed} errors</span>
+                          <span className="admin-badge admin-badge-err inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-destructive-subtle text-admin-destructive border border-admin-destructive-border">{r.failed} errors</span>
                         ) : (
-                          <span className="admin-text-muted">0</span>
+                          <span className="text-xs text-admin-muted">0</span>
                         )}
                       </td>
-                      <td className="admin-font-mono admin-text-sm">{r.inTok.toLocaleString('en-US')}</td>
-                      <td className="admin-font-mono admin-text-sm">{r.outTok.toLocaleString('en-US')}</td>
-                      <td className="admin-font-mono admin-text-sm" style={{ fontWeight: 600 }}>
+                      <td className="py-3 px-4 font-mono text-xs text-admin-muted">{r.inTok.toLocaleString('en-US')}</td>
+                      <td className="py-3 px-4 font-mono text-xs text-admin-muted">{r.outTok.toLocaleString('en-US')}</td>
+                      <td className="py-3 px-4 font-mono text-xs font-semibold text-admin-fg">
                         {(r.inTok + r.outTok).toLocaleString('en-US')}
                       </td>
                     </tr>

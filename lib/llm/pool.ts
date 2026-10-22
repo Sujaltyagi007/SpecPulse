@@ -2,8 +2,9 @@ import { z } from 'zod';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
+import { getSetting } from '@/lib/settings';
 
-const PoolEntry = z.object({
+export const PoolEntry = z.object({
   provider: z.enum(['anthropic', 'openai-compatible']),
   model: z.string().min(1),
   keys: z.array(z.string().min(1)).min(1),
@@ -20,14 +21,15 @@ interface Slot {
   apiKey: string;
 }
 
-function loadPool(): Slot[] {
-  const raw = process.env.LLM_POOL;
-  const entries: PoolEntry[] = raw ? z.array(PoolEntry).parse(JSON.parse(raw)) : process.env.ANTHROPIC_API_KEY ? [PoolEntry.parse({ provider: 'anthropic', model: 'claude-opus-5-5', keys: ['ANTHROPIC_API_KEY'] })] : [];
+/** Pool and keys come from the admin panel when set there, else from .env (lib/settings.ts). */
+async function loadPool(): Promise<Slot[]> {
+  const raw = await getSetting('LLM_POOL');
+  const entries: PoolEntry[] = raw ? z.array(PoolEntry).parse(JSON.parse(raw)) : (await getSetting('ANTHROPIC_API_KEY')) ? [PoolEntry.parse({ provider: 'anthropic', model: 'claude-opus-5-5', keys: ['ANTHROPIC_API_KEY'] })] : [];
 
-  const slots = entries.flatMap((entry) => entry.keys.flatMap((keyName) => {
-    const apiKey = process.env[keyName];
+  const slots = (await Promise.all(entries.flatMap((entry) => entry.keys.map(async (keyName) => {
+    const apiKey = await getSetting(keyName);
     return apiKey ? [{ entry, keyName, apiKey }] : [];
-  }),);
+  })))).flat();
   if (slots.length === 0) { throw new Error('No LLM configured: set LLM_POOL (and the key env vars it names) or ANTHROPIC_API_KEY.'); }
   return slots;
 }
@@ -61,6 +63,8 @@ export interface GenerateJsonRequest<T> {
   user: string;
   schema: z.ZodType<T>;
   maxAttempts?: number;
+  /** Images sent before the user text (for vision models), e.g. cover candidates to score. */
+  images?: { bytes: Uint8Array; type: string }[];
 }
 
 export interface GenerateJsonResult<T> {
@@ -78,14 +82,21 @@ interface AttemptOutput<T> {
 
 const SERVER_FALLBACK_MODELS = new Set(['claude-fable-5-1', 'claude-opus-5-5', 'claude-opus-5', 'claude-sonnet-5-5']);
 
+const base64 = (bytes: Uint8Array) => Buffer.from(bytes).toString('base64');
+
 async function callAnthropic<T>(slot: Slot, req: GenerateJsonRequest<T>): Promise<AttemptOutput<T>> {
   const client = new Anthropic({ apiKey: slot.apiKey, maxRetries: 0, timeout: 120_000 });
   const { model, effort } = slot.entry;
+  const content: Anthropic.Beta.BetaContentBlockParam[] = [
+    ...(req.images ?? []).map((img) => ({
+      type: 'image' as const,
+      source: { type: 'base64' as const, media_type: img.type as 'image/png' | 'image/jpeg' | 'image/webp' | 'image/gif', data: base64(img.bytes) },
+    })),
+    { type: 'text', text: req.user },
+  ];
   const res = await client.beta.messages.parse({
-    model,
-    max_tokens: 16000,
-    system: req.system,
-    messages: [{ role: 'user', content: req.user }],
+    model, max_tokens: 16000, system: req.system,
+    messages: [{ role: 'user', content }],
     output_config: { format: betaZodOutputFormat(req.schema), ...(effort && { effort }) },
     ...(SERVER_FALLBACK_MODELS.has(model) && {
       betas: ['server-side-fallback-2026-07-01'],
@@ -105,7 +116,15 @@ async function callOpenAiCompatible<T>(slot: Slot, req: GenerateJsonRequest<T>):
     model: slot.entry.model,
     messages: [
       { role: 'system', content: `${req.system}\n\nRespond with a single JSON object matching this JSON Schema:\n${JSON.stringify(jsonSchema)}` },
-      { role: 'user', content: req.user },
+      {
+        role: 'user',
+        content: req.images?.length
+          ? [
+              ...req.images.map((img) => ({ type: 'image_url' as const, image_url: { url: `data:${img.type};base64,${base64(img.bytes)}` } })),
+              { type: 'text' as const, text: req.user },
+            ]
+          : req.user,
+      },
     ],
     response_format: slot.entry.jsonMode === 'schema' ? { type: 'json_schema', json_schema: { name: 'output', schema: jsonSchema, strict: true } } : { type: 'json_object' },
   });
@@ -127,7 +146,7 @@ async function callOpenAiCompatible<T>(slot: Slot, req: GenerateJsonRequest<T>):
 
 
 export async function generateJson<T>(req: GenerateJsonRequest<T>): Promise<GenerateJsonResult<T>> {
-  const slots = orderSlots(loadPool());
+  const slots = orderSlots(await loadPool());
   const attempts = slots.slice(0, req.maxAttempts ?? slots.length);
   const failures: string[] = [];
 
@@ -179,16 +198,16 @@ export interface ResearchResult {
   model: string;
 }
 
-export function canResearchWeb(): boolean {
+export async function canResearchWeb(): Promise<boolean> {
   try {
-    return loadPool().some((s) => s.entry.provider === 'anthropic');
+    return (await loadPool()).some((s) => s.entry.provider === 'anthropic');
   } catch {
     return false;
   }
 }
 
 export async function webResearch(req: { purpose: string; system: string; user: string; maxSearches?: number }): Promise<ResearchResult> {
-  const slots = orderSlots(loadPool()).filter((s) => s.entry.provider === 'anthropic');
+  const slots = orderSlots(await loadPool()).filter((s) => s.entry.provider === 'anthropic');
   if (!slots.length) throw new Error('Web research needs an Anthropic entry in LLM_POOL.');
   const failures: string[] = [];
 

@@ -34,39 +34,39 @@ export function ProductEditorClient({ product, validation, copy, error }: { prod
   ];
 
   return (
-    <div style={{ paddingBottom: 48 }}>
-      <nav className="admin-breadcrumb">
-        <Link href="/admin">Console</Link>
-        <span className="admin-breadcrumb-separator">/</span>
-        <Link href="/admin">Products</Link>
-        <span className="admin-breadcrumb-separator">/</span>
-        <span>{product.category.name}</span>
+    <div className="pb-12 max-w-7xl mx-auto flex flex-col gap-6">
+      <nav className="admin-breadcrumb flex items-center gap-1.5 text-xs text-admin-muted">
+        <Link href="/admin" className="hover:text-admin-fg transition-colors">Console</Link>
+        <span className="text-admin-muted/60">/</span>
+        <Link href="/admin?tab=products" className="hover:text-admin-fg transition-colors">Products</Link>
+        <span className="text-admin-muted/60">/</span>
+        <span className="text-admin-fg font-medium">{product.category.name}</span>
       </nav>
 
-      <div className="admin-page-header">
+      <div className="admin-page-header flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-admin-border-subtle">
         <div>
-          <div className="admin-flex admin-items-center admin-gap-3" style={{ marginBottom: 6 }}>
-            <h1 className="admin-page-title">{product.title}</h1>
+          <div className="flex flex-wrap items-center gap-3 mb-1.5">
+            <h1 className="text-2xl font-bold tracking-tight text-admin-fg m-0">{product.title}</h1>
             <StatusBadge status={product.status} />
             <IssueBadge errors={errors.length} warnings={warnings.length} />
           </div>
 
-          <div className="admin-text-sm admin-text-muted admin-flex admin-items-center admin-gap-3">
+          <div className="text-xs text-admin-muted flex flex-wrap items-center gap-2">
             <span>Category: {product.category.name}</span>
             <span>·</span>
-            <span>Slug: {product.slug}</span>
+            <span className="font-mono">Slug: {product.slug}</span>
             {product.status === 'published' && (
               <Fragment>
                 <span>·</span>
-                <Link href={productPath(product.category.slug, product.slug)} target="_blank" className="admin-external-link" style={{ padding: 0 }}>
-                  View live page <ExternalLink size={12} />
+                <Link href={productPath(product.category.slug, product.slug)} target="_blank" className="text-admin-accent inline-flex items-center gap-1 hover:underline">
+                  View live page <ExternalLink size={11} />
                 </Link>
               </Fragment>
             )}
           </div>
         </div>
-        <div className="admin-header-actions">
-          <form className="admin-flex admin-items-center admin-gap-2">
+        <div className="admin-header-actions flex items-center gap-2 shrink-0">
+          <form className="flex items-center gap-2">
             <input type="hidden" name="productId" value={product.id} />
             {product.status === 'draft' && (
               <ConfirmFormButton
@@ -136,8 +136,7 @@ export function ProductEditorClient({ product, validation, copy, error }: { prod
 
             {product.status === 'published' && (
               <ConfirmFormButton
-                className="admin-btn admin-btn-outline"
-                style={{ color: 'var(--admin-destructive)' }}
+                className="admin-btn admin-btn-ghost text-admin-destructive hover:bg-admin-destructive-subtle"
                 dialogTitle="Unpublish & Archive Product?"
                 dialogDescription={`Unpublish "${product.title}"? The public page will be removed from the site.`}
                 confirmText="Unpublish"
@@ -154,24 +153,20 @@ export function ProductEditorClient({ product, validation, copy, error }: { prod
       <ActionError message={error} />
 
       {(errors.length > 0 || warnings.length > 0) && (
-        <div style={{
-          marginBottom: 24,
-          padding: '14px 18px',
-          borderRadius: 'var(--admin-radius)',
-          backgroundColor: errors.length > 0 ? 'var(--admin-destructive-subtle)' : 'var(--admin-warn-subtle)',
-          border: `1px solid ${errors.length > 0 ? 'var(--admin-destructive-border)' : 'var(--admin-warn-border)'}`,
-        }}>
-          <div style={{ fontWeight: 600, fontSize: '0.84375rem', marginBottom: 4 }}>
+        <div className={`p-4 rounded-admin-lg border ${
+          errors.length > 0 ? 'bg-admin-destructive-subtle border-admin-destructive-border' : 'bg-admin-warn-subtle border-admin-warn-border'
+        }`}>
+          <div className={`font-semibold text-xs mb-1.5 ${errors.length > 0 ? 'text-admin-destructive' : 'text-admin-warn'}`}>
             {errors.length > 0 ? 'Validation Requirements Pending' : 'Editorial Warnings'}
           </div>
-          <ul style={{ margin: 0, paddingLeft: 18, fontSize: '0.8125rem', lineHeight: 1.6 }}>
+          <ul className="m-0 pl-5 text-xs leading-relaxed space-y-1">
             {errors.map((e, idx) => (
-              <li key={idx} style={{ color: 'var(--admin-destructive)' }}>
+              <li key={idx} className="text-admin-destructive font-medium">
                 {e}
               </li>
             ))}
             {warnings.map((w, idx) => (
-              <li key={idx} style={{ color: 'var(--admin-warn)' }}>
+              <li key={idx} className="text-admin-warn font-medium">
                 {w}
               </li>
             ))}
@@ -208,47 +203,47 @@ export function ProductEditorClient({ product, validation, copy, error }: { prod
             </CardHeader>
 
             <CardContent noPadding>
-              <div className="admin-table-container">
-                <table className="admin-table">
+              <div className="admin-table-container w-full overflow-x-auto">
+                <table className="admin-table w-full text-left border-collapse">
                   <thead>
-                    <tr>
-                      <th>Specification Field</th>
-                      <th>Value</th>
-                      <th>Source Verification URL</th>
-                      <th style={{ width: 110 }}>Verified</th>
-                      <th style={{ textAlign: 'right', width: 90 }}>Action</th>
+                    <tr className="border-b border-admin-border-subtle">
+                      <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Specification Field</th>
+                      <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Value</th>
+                      <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Source Verification URL</th>
+                      <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider w-[120px]">Verified</th>
+                      <th className="py-3 px-4 text-right font-semibold text-xs text-admin-muted uppercase tracking-wider w-[100px]">Action</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-admin-border-subtle">
                     {allSpecFields.map((f: any) => {
                       const s = specs.get(f.key);
                       const formId = `spec-${f.key}`;
                       return (
-                        <tr key={f.key}>
-                          <td>
-                            <div style={{ fontWeight: 600 }}>{f.label}</div>
-                            <div className="admin-text-xs admin-text-muted">
-                              {f.key}
+                        <tr key={f.key} className="hover:bg-admin-muted-bg/30 transition-colors">
+                          <td className="py-3.5 px-4">
+                            <div className="font-semibold text-sm text-admin-fg">{f.label}</div>
+                            <div className="text-xs text-admin-muted mt-0.5">
+                              <span className="font-mono">{f.key}</span>
                               {f.unit && <span> ({f.unit})</span>}
-                              {f.required && (<span style={{ color: 'var(--admin-destructive)', fontWeight: 600 }}> * required</span>)}
+                              {f.required && (<span className="text-admin-destructive font-semibold"> * required</span>)}
                             </div>
                           </td>
-                          <td>
-                            <input form={formId} name="value" className="admin-input" defaultValue={s?.value ?? ''} placeholder="Value..." />
+                          <td className="py-3.5 px-4">
+                            <input form={formId} name="value" className="admin-input w-full" defaultValue={s?.value ?? ''} placeholder="Value..." />
                           </td>
-                          <td>
-                            <input form={formId} name="sourceRef" className="admin-input" defaultValue={s?.sourceRef ?? ''} placeholder="https://..." />
+                          <td className="py-3.5 px-4">
+                            <input form={formId} name="sourceRef" className="admin-input w-full font-mono text-xs" defaultValue={s?.sourceRef ?? ''} placeholder="https://..." />
                           </td>
-                          <td>
-                            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.8125rem', whiteSpace: 'nowrap' }}>
-                              <input form={formId} type="checkbox" name="verified" defaultChecked={!!s?.verifiedAt} style={{ width: 'auto' }} />
-                              <span className={s?.verifiedAt ? 'admin-text-muted' : ''}>
+                          <td className="py-3.5 px-4">
+                            <label className="inline-flex items-center gap-2 cursor-pointer text-xs select-none">
+                              <input form={formId} type="checkbox" name="verified" defaultChecked={!!s?.verifiedAt} className="rounded-admin text-admin-accent cursor-pointer" />
+                              <span className={s?.verifiedAt ? 'text-admin-muted' : 'font-medium text-admin-fg'}>
                                 {s?.verifiedAt ? 'Verified' : 'Unchecked'}
                               </span>
                             </label>
                           </td>
 
-                          <td style={{ textAlign: 'right' }}>
+                          <td className="py-3.5 px-4 text-right">
                             <form id={formId} action={saveSpec}>
                               <input type="hidden" name="productId" value={product.id} />
                               <input type="hidden" name="key" value={f.key} />
@@ -284,34 +279,34 @@ export function ProductEditorClient({ product, validation, copy, error }: { prod
               </div>
             </CardHeader>
             <CardContent>
-              <form action={updateIdentifiers} style={{ display: 'grid', gap: 16, maxWidth: 640 }}>
+              <form action={updateIdentifiers} className="grid gap-4 max-w-xl">
                 <input type="hidden" name="productId" value={product.id} />
 
-                <div className="admin-form-group">
-                  <label className="admin-label">GTIN / UPC / EAN</label>
-                  <input name="gtin" className="admin-input" defaultValue={product.gtin ?? ''} placeholder="12 or 13 digit numeric barcode" inputMode="numeric" />
-                  <span className="admin-form-hint">
+                <div className="admin-form-group flex flex-col gap-1.5">
+                  <label className="admin-label text-xs font-semibold text-admin-fg">GTIN / UPC / EAN</label>
+                  <input name="gtin" className="admin-input w-full font-mono text-sm" defaultValue={product.gtin ?? ''} placeholder="12 or 13 digit numeric barcode" inputMode="numeric" />
+                  <span className="admin-form-hint text-xs text-admin-muted">
                     Required for accurate retailer matching and pricing validation.
                   </span>
                 </div>
 
-                <div className="admin-form-group">
-                  <label className="admin-label">MPN (Manufacturer Part Number)</label>
-                  <input name="mpn" className="admin-input" defaultValue={product.mpn ?? ''} placeholder="e.g. WH-1000XM5/B" />
+                <div className="admin-form-group flex flex-col gap-1.5">
+                  <label className="admin-label text-xs font-semibold text-admin-fg">MPN (Manufacturer Part Number)</label>
+                  <input name="mpn" className="admin-input w-full font-mono text-sm" defaultValue={product.mpn ?? ''} placeholder="e.g. WH-1000XM5/B" />
                 </div>
 
-                <div className="admin-form-group">
-                  <label className="admin-label">Product Image URL</label>
-                  <input name="imageUrl" className="admin-input" defaultValue={product.imageUrl ?? ''} placeholder="https://..." />
+                <div className="admin-form-group flex flex-col gap-1.5">
+                  <label className="admin-label text-xs font-semibold text-admin-fg">Product Image URL</label>
+                  <input name="imageUrl" className="admin-input w-full font-mono text-sm" defaultValue={product.imageUrl ?? ''} placeholder="https://..." />
                   {product.imageUrl && (
-                    <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <img src={product.imageUrl} alt={product.title} style={{ width: 64, height: 64, objectFit: 'contain', border: '1px solid var(--admin-border)', borderRadius: 6, background: '#fff', }} />
-                      <span className="admin-text-xs admin-text-muted">Preview image loaded from URL</span>
+                    <div className="mt-2.5 flex items-center gap-3">
+                      <img src={product.imageUrl} alt={product.title} className="w-16 h-16 object-contain border border-admin-border rounded-admin bg-white p-1" />
+                      <span className="text-xs text-admin-muted">Preview image loaded from URL</span>
                     </div>
                   )}
                 </div>
 
-                <div style={{ marginTop: 8 }}>
+                <div className="pt-2">
                   <ConfirmFormButton
                     className="admin-btn admin-btn-primary"
                     dialogTitle="Save Product Identifiers?"
@@ -352,55 +347,55 @@ export function ProductEditorClient({ product, validation, copy, error }: { prod
             </CardHeader>
             <CardContent noPadding>
               {product.offers.length === 0 ? (
-                <div style={{ padding: 32 }}>
-                  <p className="admin-text-muted" style={{ margin: 0 }}>
+                <div className="p-8">
+                  <p className="text-sm text-admin-muted m-0">
                     No offers yet. Use "Find prices now", or wait for the daily price refresh.
                   </p>
                 </div>
               ) : (
-                <div className="admin-table-container">
-                  <table className="admin-table">
+                <div className="admin-table-container w-full overflow-x-auto">
+                  <table className="admin-table w-full text-left border-collapse">
                     <thead>
-                      <tr>
-                        <th>Retailer</th>
-                        <th>Observed Price</th>
-                        <th>Stock Status</th>
-                        <th>Last Seen</th>
-                        <th>Affiliate Program</th>
+                      <tr className="border-b border-admin-border-subtle">
+                        <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Retailer</th>
+                        <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Observed Price</th>
+                        <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Stock Status</th>
+                        <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Last Seen</th>
+                        <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Affiliate Program</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-admin-border-subtle">
                       {product.offers.map((o: any) => (
-                        <tr key={o.id}>
-                          <td>
-                            <a href={o.sourceUrl} target="_blank" rel="noopener noreferrer" className="admin-external-link" style={{ padding: 0, fontWeight: 600 }}>
-                              {o.retailer.name} <ExternalLink size={12} />
+                        <tr key={o.id} className="hover:bg-admin-muted-bg/30 transition-colors">
+                          <td className="py-3.5 px-4">
+                            <a href={o.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-sm text-admin-fg hover:text-admin-accent inline-flex items-center gap-1.5 no-underline">
+                              {o.retailer.name} <ExternalLink size={11} className="text-admin-muted" />
                             </a>
                           </td>
 
-                          <td style={{ fontWeight: 600 }}>
+                          <td className="py-3.5 px-4 font-semibold text-sm text-admin-fg">
                             {o.priceCents != null ? formatPrice(o.priceCents, o.currency) : '—'}
                           </td>
 
-                          <td>
+                          <td className="py-3.5 px-4">
                             {o.inStock === true ? (
-                              <span className="admin-badge admin-badge-ok">In Stock</span>
+                              <span className="admin-badge admin-badge-ok inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-ok-subtle text-admin-ok border border-admin-ok-border">In Stock</span>
                             ) : o.inStock === false ? (
-                              <span className="admin-badge admin-badge-err">Out of Stock</span>
+                              <span className="admin-badge admin-badge-err inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-destructive-subtle text-admin-destructive border border-admin-destructive-border">Out of Stock</span>
                             ) : (
-                              <span className="admin-text-muted">Unknown</span>
+                              <span className="text-xs text-admin-muted">Unknown</span>
                             )}
                           </td>
 
-                          <td className="admin-text-muted admin-text-xs">{formatDate(new Date(o.lastSeenAt))}</td>
+                          <td className="py-3.5 px-4 text-admin-muted text-xs">{formatDate(new Date(o.lastSeenAt))}</td>
 
-                          <td>
+                          <td className="py-3.5 px-4">
                             {o.retailer.affiliateProgram?.active ? (
-                              <span className="admin-badge admin-badge-ok">
+                              <span className="admin-badge admin-badge-ok inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-ok-subtle text-admin-ok border border-admin-ok-border">
                                 {o.retailer.affiliateProgram.network} active
                               </span>
                             ) : (
-                              <span className="admin-badge admin-badge-draft">direct only</span>
+                              <span className="admin-badge admin-badge-draft inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium bg-admin-muted-bg text-admin-muted border border-admin-border">direct only</span>
                             )}
                           </td>
                         </tr>
@@ -425,18 +420,18 @@ export function ProductEditorClient({ product, validation, copy, error }: { prod
               </div>
             </CardHeader>
             <CardContent>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div className="admin-flex admin-items-center admin-gap-3">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3">
                   {copy ? (
-                    <div className="admin-flex admin-items-center admin-gap-3">
-                      <span>Status:</span>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-xs text-admin-muted">Status:</span>
                       <StatusBadge status={copy.status} />
                       <Link href={`/admin/content/${copy.id}`} className="admin-btn admin-btn-secondary admin-btn-sm">
                         Open in Copy Studio
                       </Link>
                     </div>
                   ) : (
-                    <div className="admin-text-muted">No copy generated for this product yet.</div>
+                    <div className="text-xs text-admin-muted">No copy generated for this product yet.</div>
                   )}
                 </div>
 
@@ -449,16 +444,16 @@ export function ProductEditorClient({ product, validation, copy, error }: { prod
         </TabsContent>
       </Tabs>
 
-      <Card style={{ marginTop: 32, borderColor: 'var(--admin-destructive-border)' }}>
-        <CardHeader>
+      <Card className="mt-8 border-admin-destructive-border bg-admin-destructive-subtle/20">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <CardTitle style={{ color: 'var(--admin-destructive)' }}>Danger zone</CardTitle>
+            <CardTitle className="text-admin-destructive font-bold">Danger zone</CardTitle>
             <CardDescription>
               Deleting removes this product, its specs, prices, page copy and any comparisons that include it. Best-of
               lists that pick it go back to draft. This can&apos;t be undone; to hide it but keep the data, use Unpublish instead.
             </CardDescription>
           </div>
-          <form>
+          <form className="shrink-0">
             <input type="hidden" name="productId" value={product.id} />
             <ConfirmFormButton
               className="admin-btn admin-btn-destructive"

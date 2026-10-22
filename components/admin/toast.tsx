@@ -44,13 +44,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast: toastActions }}>
       {children}
-      <div className="admin-toast-container" aria-live="polite">
+      <div className="admin-toast-container fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none" aria-live="polite">
         <AnimatePresence initial={false}>
         {toasts.map((t) => (
           <motion.div
             key={t.id}
             layout
-            className={`admin-toast admin-toast-${t.type}`}
+            className={`admin-toast admin-toast-${t.type} pointer-events-auto rounded-admin border border-admin-border bg-admin-surface/95 text-admin-fg shadow-admin-lg p-3.5 flex items-start gap-3 backdrop-blur-md transition-colors`}
             role="status"
             initial={{ opacity: 0, x: 60, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -61,16 +61,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             dragElastic={{ left: 0, right: 0.6 }}
             onDragEnd={(_, info) => info.offset.x > 80 && removeToast(t.id)}
           >
-            {t.type === 'success' && <CheckCircle2 size={18} style={{ color: 'var(--admin-ok)', flexShrink: 0, marginTop: 2 }} />}
-            {t.type === 'error' && <AlertCircle size={18} style={{ color: 'var(--admin-destructive)', flexShrink: 0, marginTop: 2 }} />}
-            {t.type === 'info' && <Info size={18} style={{ color: 'var(--admin-accent)', flexShrink: 0, marginTop: 2 }} />}
-            <div className="admin-toast-content">
-              <div className="admin-toast-title">{t.title}</div>
-              {t.description && <div className="admin-toast-desc">{t.description}</div>}
+            {t.type === 'success' && <CheckCircle2 size={18} className="text-admin-ok shrink-0 mt-0.5" />}
+            {t.type === 'error' && <AlertCircle size={18} className="text-admin-destructive shrink-0 mt-0.5" />}
+            {t.type === 'info' && <Info size={18} className="text-admin-accent shrink-0 mt-0.5" />}
+            <div className="admin-toast-content min-w-0 flex-1">
+              <div className="admin-toast-title text-sm font-semibold text-admin-fg leading-tight">{t.title}</div>
+              {t.description && <div className="admin-toast-desc text-xs text-admin-muted mt-1 leading-normal">{t.description}</div>}
             </div>
             <button
               onClick={() => removeToast(t.id)}
-              className="admin-toast-close"
+              className="admin-toast-close text-admin-muted hover:text-admin-fg rounded p-1 transition-colors shrink-0"
               aria-label="Close notification"
             >
               <X size={15} />

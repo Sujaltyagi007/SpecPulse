@@ -28,13 +28,11 @@ export async function refreshPrices(
   log: (msg: string) => void = () => { },
   opts: { productIds?: number[] } = {},
 ): Promise<RefreshResult> {
-  const cfg = serpApiConfigFromEnv();
+  const cfg = await serpApiConfigFromEnv();
   const currency = currencyForGl(cfg.gl);
   const maxCalls = Number(process.env.INGEST_MAX_CALLS ?? 100);
 
-  const run = await prisma.ingestRun.create({
-    data: { job: opts.productIds ? 'refresh-prices:serpapi:manual' : 'refresh-prices:serpapi' },
-  });
+  const run = await prisma.ingestRun.create({ data: { job: opts.productIds ? 'refresh-prices:serpapi:manual' : 'refresh-prices:serpapi' } });
   const result: RefreshResult = { runId: run.id, itemsOk: 0, itemsFailed: 0, apiCalls: 0, touched: [] };
   let fatal: string | undefined;
 

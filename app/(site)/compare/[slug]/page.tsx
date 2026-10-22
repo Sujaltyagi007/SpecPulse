@@ -34,13 +34,10 @@ export default async function ComparisonPage({ params }: Props) {
   return (
     <article>
       {faq && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faq) }} />}
-
       <Breadcrumb items={[{ label: 'Compare', href: '/compare' }, { label: a.category.name, href: `/${a.category.slug}` }]} />
       <header className="page-head">
         <span className="chip">Comparison</span>
-        <h1>
-          {a.title} vs {b.title}
-        </h1>
+        <h1>{a.title} vs {b.title}</h1>
         <p className="lead">{page.summary ?? `Verified specs and today's prices for the ${a.title} and ${b.title}, side by side.`}</p>
         <Disclosure />
       </header>
@@ -63,12 +60,8 @@ export default async function ComparisonPage({ params }: Props) {
           <thead>
             <tr>
               <th>Spec</th>
-              <th>
-                <Link href={productPath(a.category.slug, a.slug)}>{a.title}</Link>
-              </th>
-              <th>
-                <Link href={productPath(b.category.slug, b.slug)}>{b.title}</Link>
-              </th>
+              <th><Link href={productPath(a.category.slug, a.slug)}>{a.title}</Link></th>
+              <th><Link href={productPath(b.category.slug, b.slug)}>{b.title}</Link></th>
             </tr>
           </thead>
           <tbody>
@@ -81,12 +74,8 @@ export default async function ComparisonPage({ params }: Props) {
             ))}
             <tr>
               <th scope="row">Lowest price today</th>
-              <td>
-                <BestPrice product={a} />
-              </td>
-              <td>
-                <BestPrice product={b} />
-              </td>
+              <td><BestPrice product={a} /></td>
+              <td><BestPrice product={b} /></td>
             </tr>
           </tbody>
         </table>

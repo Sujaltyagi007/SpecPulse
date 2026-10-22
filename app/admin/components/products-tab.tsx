@@ -89,24 +89,20 @@ export function ProductsTab() {
     <Card>
       <CardHeader>
         <div>
-          <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Layers size={18} style={{ color: 'var(--admin-accent)' }} />
+          <CardTitle className="flex items-center gap-2">
+            <Layers size={18} className="text-admin-accent" />
             Products
           </CardTitle>
           <CardDescription>A product goes live once its specs, GTIN and price are checked and you approve it.</CardDescription>
         </div>
-        <div className="admin-flex admin-items-center admin-gap-2">
+        <div className="flex items-center gap-2">
           <Link href="/admin/products/new" className="admin-btn admin-btn-primary admin-btn-sm"><Plus size={14} /> Add product</Link>
           <MotionButton onClick={() => refresh()} disabled={isRefreshing} className="admin-btn admin-btn-secondary admin-btn-sm"
             title="Refresh products" aria-label="Refresh products"> <RotateCw size={13} className={isRefreshing ? 'animate-spin' : ''} />
           </MotionButton>
         </div>
       </CardHeader>
-      <div style={{
-        padding: '14px 24px',
-        borderBottom: '1px solid var(--admin-border-subtle)',
-        display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center',
-      }}>
+      <div className="p-4 border-b border-admin-border-subtle flex flex-wrap items-center gap-3">
         <Segmented<StatusFilter>
           ariaLabel="Filter by status"
           value={selectedStatus}
@@ -120,12 +116,12 @@ export function ProductsTab() {
             { value: 'archived', label: 'Archived', count: counts.archived ?? 0 },
           ]}
         />
-        <div style={{ position: 'relative', flex: '1 1 220px', minWidth: 180 }}>
-          <Search size={15} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--admin-muted)' }} />
-          <input type="text" className="admin-input" style={{ paddingLeft: 32 }} placeholder="Search by name or GTIN" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
+        <div className="relative flex-1 min-w-[200px]">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-admin-muted pointer-events-none" />
+          <input type="text" className="admin-input pl-9 w-full" placeholder="Search by name or GTIN" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
         </div>
         {data && data.categories.length > 1 && (
-          <select className="admin-select" style={{ width: 'auto', minWidth: 150 }} value={selectedCategory ?? ''} onChange={(e) => setSelectedCategory(e.target.value ? Number(e.target.value) : undefined)}>
+          <select className="admin-select w-auto min-w-[150px]" value={selectedCategory ?? ''} onChange={(e) => setSelectedCategory(e.target.value ? Number(e.target.value) : undefined)}>
             <option value="">All categories</option>
             {data.categories.map((c) => (
               <option key={c.id} value={c.id}>
@@ -138,62 +134,62 @@ export function ProductsTab() {
 
       <CardContent noPadding>
         {isLoading ? (
-          <div style={{ padding: 24 }}>
+          <div className="p-6">
             <TableSkeleton rows={8} cols={4} />
           </div>
         ) : error || !data ? (
-          <div style={{ padding: 32 }}>
+          <div className="p-8">
             <EmptyState title="Couldn't load products" description={error || 'An error occurred'} action={
               <button onClick={() => refresh()} className="admin-btn admin-btn-secondary">Try again</button>
             } />
           </div>
         ) : data.products.length === 0 ? (
-          <div style={{ padding: 40 }}>
-            <EmptyState icon={<CheckCircle2 size={24} style={{ color: 'var(--admin-ok)' }} />} title="Nothing here" description="No products match this filter." />
+          <div className="p-10">
+            <EmptyState icon={<CheckCircle2 size={24} className="text-admin-ok" />} title="Nothing here" description="No products match this filter." />
           </div>
         ) : (
-          <div className="admin-table-container">
-            <table className="admin-table">
+          <div className="admin-table-container w-full overflow-x-auto">
+            <table className="admin-table w-full text-left border-collapse">
               <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Status</th>
-                  <th>Next step</th>
-                  <th style={{ textAlign: 'right' }} />
+                <tr className="border-b border-admin-border-subtle">
+                  <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Product</th>
+                  <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Status</th>
+                  <th className="py-3 px-4 font-semibold text-xs text-admin-muted uppercase tracking-wider">Next step</th>
+                  <th className="py-3 px-4 text-right" />
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-admin-border-subtle">
                 <AnimatePresence initial={false}>
                   {data.products.map((p, i) => {
                     const busy = actionLoadingId === p.id;
                     const blocked = p.errors.length > 0;
                     return (
-                      <MotionRow key={p.id} index={i}>
-                        <td style={{ maxWidth: 280 }}>
-                          <Link href={`/admin/products/${p.id}`} style={{ fontWeight: 600, color: 'var(--admin-fg)', textDecoration: 'none' }}>
+                      <MotionRow key={p.id} index={i} className="hover:bg-admin-muted-bg/30 transition-colors">
+                        <td className="py-3 px-4 max-w-[280px]">
+                          <Link href={`/admin/products/${p.id}`} className="font-semibold text-sm text-admin-fg hover:text-admin-accent transition-colors no-underline">
                             {p.title}
                           </Link>
-                          <div className="admin-text-xs admin-text-muted" style={{ marginTop: 2 }}>
-                            {p.category.name}
+                          <div className="text-xs text-admin-muted mt-0.5 flex items-center gap-1.5">
+                            <span>{p.category.name}</span>
                             {p.status === 'published' && (
                               <Fragment>
-                                {' · '}
-                                <Link href={productPath(p.category.slug, p.slug)} target="_blank" style={{ color: 'var(--admin-accent)' }}>
+                                <span>·</span>
+                                <Link href={productPath(p.category.slug, p.slug)} target="_blank" className="text-admin-accent inline-flex items-center gap-1 hover:underline">
                                   View live <ExternalLink size={10} />
                                 </Link>
                               </Fragment>
                             )}
                           </div>
                         </td>
-                        <td>
+                        <td className="py-3 px-4">
                           <StatusBadge status={p.status} />
                         </td>
-                        <td className="admin-text-sm" style={{ color: blocked ? 'var(--admin-destructive)' : 'var(--admin-muted)', maxWidth: 320 }}>
+                        <td className={`py-3 px-4 text-xs max-w-[320px] ${blocked ? 'text-admin-destructive font-medium' : 'text-admin-muted'}`}>
                           {nextStep(p)}
-                          {p.errors.length > 1 && <span className="admin-text-muted"> (+{p.errors.length - 1} more)</span>}
+                          {p.errors.length > 1 && <span className="text-admin-muted"> (+{p.errors.length - 1} more)</span>}
                         </td>
-                        <td style={{ textAlign: 'right' }}>
-                          <div className="admin-flex admin-items-center" style={{ justifyContent: 'flex-end', gap: 6 }}>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
                             {p.status === 'draft' && !blocked && (
                               <MotionButton
                                 disabled={busy}
@@ -254,8 +250,7 @@ export function ProductsTab() {
                             {p.status === 'published' && (
                               <MotionButton
                                 disabled={busy}
-                                className="admin-btn admin-btn-ghost admin-btn-sm"
-                                style={{ color: 'var(--admin-destructive)' }}
+                                className="admin-btn admin-btn-ghost admin-btn-sm text-admin-destructive hover:bg-admin-destructive-subtle"
                                 onClick={() =>
                                   run(p, {
                                     title: 'Unpublish product?',
@@ -271,7 +266,7 @@ export function ProductsTab() {
                                 Unpublish
                               </MotionButton>
                             )}
-                            <Link href={`/admin/products/${p.id}`} className="admin-btn admin-btn-ghost admin-btn-sm" title="Open product">
+                            <Link href={`/admin/products/${p.id}`} className="admin-btn admin-btn-ghost admin-btn-sm p-1.5 text-admin-muted hover:text-admin-fg" title="Open product">
                               <ChevronRight size={14} />
                             </Link>
                           </div>

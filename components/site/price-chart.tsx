@@ -6,7 +6,6 @@ const W = 600;
 const H = 160;
 const PAD = 8;
 
-/** Static SVG chart of the daily lowest price. */
 export function PriceChart({ currency, points }: Props) {
   const values = points.map((p) => p.cents);
   const min = Math.min(...values);

@@ -1,3 +1,4 @@
+import { getSetting } from '@/lib/settings';
 import { z } from 'zod';
 
 const ShoppingResult = z.object({
@@ -22,8 +23,8 @@ export interface SerpApiConfig {
   hl: string;
 }
 
-export function serpApiConfigFromEnv(): SerpApiConfig {
-  const apiKey = process.env.SERPAPI_API_KEY;
+export async function serpApiConfigFromEnv(): Promise<SerpApiConfig> {
+  const apiKey = await getSetting('SERPAPI_API_KEY');
   if (!apiKey) throw new Error('SERPAPI_API_KEY is not set.');
   return { apiKey, gl: process.env.SERPAPI_GL ?? 'us', hl: process.env.SERPAPI_HL ?? 'en' };
 }

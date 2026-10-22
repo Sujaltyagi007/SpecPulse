@@ -1,29 +1,15 @@
 'use client';
 import { Fragment, useState } from 'react';
 export { StatusBadge } from './admin/badge';
-import { AlertDialog } from './admin/alert-dialog';
 import type { PageType } from '@/lib/content/facts';
-import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
-import { generateContent } from '@/app/admin/content-actions';
+import { Sparkles, AlertCircle } from 'lucide-react';
 
 export function ActionError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <div style={{
-      margin: '16px 0',
-      padding: '12px 16px',
-      borderRadius: '8px',
-      backgroundColor: 'var(--admin-destructive-subtle, #fef2f2)',
-      border: '1px solid var(--admin-destructive-border, #fecaca)',
-      color: 'var(--admin-destructive, #ef4444)',
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: '10px',
-      fontSize: '0.84375rem',
-      lineHeight: 1.5,
-    }} role="alert" >
-      <AlertCircle size={18} style={{ flexShrink: 0, marginTop: 2 }} />
-      <div style={{ whiteSpace: 'pre-wrap', flex: 1 }}>{message}</div>
+    <div className="my-4 flex items-start gap-2.5 rounded-lg border border-admin-destructive-border bg-admin-destructive-subtle px-4 py-3 text-[0.84375rem] leading-6 text-admin-destructive" role="alert">
+      <AlertCircle size={18} className="mt-0.5 shrink-0" />
+      <div className="min-w-0 flex-1 whitespace-pre-wrap">{message}</div>
     </div>
   );
 }
@@ -44,15 +30,7 @@ export function GenerateButton({ pageType, pageKey, back, hasCopy }: {
         <Sparkles size={14} />
         {hasCopy ? 'Regenerate copy' : 'Generate copy'}
       </button>
-
-      <ContentGenerateModal
-        open={open}
-        onOpenChange={setOpen}
-        pageType={pageType}
-        pageKey={pageKey}
-        back={back}
-        hasCopy={hasCopy}
-      />
+      <ContentGenerateModal open={open} onOpenChange={setOpen} pageType={pageType} pageKey={pageKey} back={back} hasCopy={hasCopy} />
     </Fragment>
   );
 }

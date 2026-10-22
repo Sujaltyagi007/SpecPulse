@@ -17,7 +17,6 @@ test('themeStyle only overrides what the user customised', () => {
   assert.equal(neutral['--admin-accent'], '#3b82f6');
   assert.equal(neutral['--admin-primary'], undefined, 'neutral buttons follow the palette');
   assert.equal(neutral['--admin-border'], undefined, 'default border follows the palette');
-
   const custom = themeStyle({ ...DEFAULT_THEME, button: 'accent', accent: '#fde047', border: '#ff0000', radius: 'sharp' }) as Record<string, string>;
   assert.equal(custom['--admin-primary'], '#fde047');
   assert.equal(custom['--admin-primary-fg'], '#0f172a', 'dark text on a light yellow button');

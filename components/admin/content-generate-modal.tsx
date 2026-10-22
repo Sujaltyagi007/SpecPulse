@@ -248,14 +248,14 @@ export function ContentGenerateModal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="admin-dialog-backdrop"
+          className="admin-dialog-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => phase !== 'running' && onOpenChange(false)}
         >
           <motion.div
-            className="admin-gen-modal"
+            className="admin-gen-modal relative w-full max-w-lg bg-admin-surface border border-admin-border rounded-admin-lg shadow-admin-xl overflow-hidden flex flex-col"
             role="dialog"
             aria-modal="true"
             aria-labelledby="gen-title"
@@ -266,9 +266,15 @@ export function ContentGenerateModal({
             transition={{ type: 'spring', stiffness: 420, damping: 30 }}
           >
             {/* Modal Header */}
-            <div className="admin-gen-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span className={`admin-gen-badge ${phase === 'running' ? 'running' : phase === 'done' ? 'done' : ''}`}>
+            <div className="admin-gen-header flex items-center justify-between px-6 py-4 border-b border-admin-border-subtle bg-admin-surface">
+              <div className="flex items-center gap-2.5">
+                <span className={`admin-gen-badge inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  phase === 'running'
+                    ? 'running bg-admin-accent/10 text-admin-accent border border-admin-accent/20'
+                    : phase === 'done'
+                    ? 'done bg-admin-ok/10 text-admin-ok border border-admin-ok/20'
+                    : 'bg-admin-muted-bg text-admin-fg border border-admin-border'
+                }`}>
                   {phase === 'running' ? (
                     <>
                       <Loader2 size={12} className="animate-spin" />
@@ -286,13 +292,13 @@ export function ContentGenerateModal({
                     </>
                   )}
                 </span>
-                <span className="admin-text-xs admin-text-muted" style={{ textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <span className="text-xs text-admin-muted uppercase tracking-wider font-mono">
                   {pageType} · {pageKey}
                 </span>
               </div>
 
               {phase === 'running' && (
-                <div className="admin-gen-timer">
+                <div className="admin-gen-timer flex items-center gap-1.5 text-xs font-mono text-admin-muted">
                   <Clock size={12} />
                   <span>{formatTime(elapsedSec)}</span>
                 </div>
@@ -301,8 +307,7 @@ export function ContentGenerateModal({
               {phase !== 'running' && (
                 <button
                   type="button"
-                  className="admin-btn admin-btn-ghost admin-btn-sm"
-                  style={{ padding: 4 }}
+                  className="admin-btn admin-btn-ghost admin-btn-sm p-1 rounded-admin text-admin-muted hover:text-admin-fg transition-colors"
                   onClick={() => onOpenChange(false)}
                 >
                   <X size={16} />
@@ -311,9 +316,9 @@ export function ContentGenerateModal({
             </div>
 
             {/* Glowing animated progress line */}
-            <div className="admin-gen-progress-bar-wrap">
+            <div className="admin-gen-progress-bar-wrap w-full h-1 bg-admin-muted-bg overflow-hidden relative">
               <motion.div
-                className="admin-gen-progress-fill"
+                className="admin-gen-progress-fill h-full bg-admin-accent transition-all"
                 style={{ width: `${progressPercent}%` }}
                 layout
                 transition={{ duration: 0.4 }}
@@ -321,43 +326,43 @@ export function ContentGenerateModal({
             </div>
 
             {/* Modal Body: Confirmation or Active Stepper */}
-            <div className="admin-gen-body">
+            <div className="admin-gen-body p-6 flex flex-col gap-4 overflow-y-auto max-h-[70vh]">
               {phase === 'confirm' ? (
                 <div>
-                  <h3 id="gen-title" style={{ fontSize: '1.1875rem', fontWeight: 700, margin: '4px 0 8px' }}>
+                  <h3 id="gen-title" className="text-lg font-bold text-admin-fg mt-1 mb-2">
                     {hasCopy ? 'Regenerate Editorial Copy?' : 'Generate Editorial Copy'}
                   </h3>
-                  <p className="admin-dialog-description" style={{ marginBottom: 18 }}>
+                  <p className="admin-dialog-description text-sm text-admin-muted mb-4 leading-relaxed">
                     SpecPulse synthesizes buying advice, trade-offs, and shopper FAQs strictly from verified ground-truth specs.
                     Every claim is automatically audited to prevent hallucinations.
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 }}>
-                    <div className="admin-gen-step-card pending">
-                      <div className="admin-gen-icon-box facts"><Database size={16} /></div>
+                  <div className="flex flex-col gap-2.5 mb-2">
+                    <div className="admin-gen-step-card pending flex items-center gap-3.5 p-3 rounded-admin border border-admin-border-subtle bg-admin-muted-bg/30">
+                      <div className="admin-gen-icon-box facts w-8 h-8 rounded-admin flex items-center justify-center shrink-0 bg-blue-500/10 text-blue-500"><Database size={16} /></div>
                       <div>
-                        <div className="admin-gen-step-title">1. Fact Ingestion</div>
-                        <div className="admin-gen-step-desc">Extracts catalog specs and verified offers</div>
+                        <div className="admin-gen-step-title font-semibold text-xs text-admin-fg">1. Fact Ingestion</div>
+                        <div className="admin-gen-step-desc text-xs text-admin-muted">Extracts catalog specs and verified offers</div>
                       </div>
                     </div>
-                    <div className="admin-gen-step-card pending">
-                      <div className="admin-gen-icon-box llm"><Cpu size={16} /></div>
+                    <div className="admin-gen-step-card pending flex items-center gap-3.5 p-3 rounded-admin border border-admin-border-subtle bg-admin-muted-bg/30">
+                      <div className="admin-gen-icon-box llm w-8 h-8 rounded-admin flex items-center justify-center shrink-0 bg-purple-500/10 text-purple-500"><Cpu size={16} /></div>
                       <div>
-                        <div className="admin-gen-step-title">2. AI Synthesis</div>
-                        <div className="admin-gen-step-desc">Structures summary, pros/cons, and shopper FAQs</div>
+                        <div className="admin-gen-step-title font-semibold text-xs text-admin-fg">2. AI Synthesis</div>
+                        <div className="admin-gen-step-desc text-xs text-admin-muted">Structures summary, pros/cons, and shopper FAQs</div>
                       </div>
                     </div>
-                    <div className="admin-gen-step-card pending">
-                      <div className="admin-gen-icon-box checks"><ShieldCheck size={16} /></div>
+                    <div className="admin-gen-step-card pending flex items-center gap-3.5 p-3 rounded-admin border border-admin-border-subtle bg-admin-muted-bg/30">
+                      <div className="admin-gen-icon-box checks w-8 h-8 rounded-admin flex items-center justify-center shrink-0 bg-emerald-500/10 text-emerald-500"><ShieldCheck size={16} /></div>
                       <div>
-                        <div className="admin-gen-step-title">3. Fact Auditing</div>
-                        <div className="admin-gen-step-desc">Automated check against ground truth database</div>
+                        <div className="admin-gen-step-title font-semibold text-xs text-admin-fg">3. Fact Auditing</div>
+                        <div className="admin-gen-step-desc text-xs text-admin-muted">Automated check against ground truth database</div>
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div className="flex flex-col gap-2.5">
                   {STEPS.map((step) => {
                     const isDone = completedSteps.has(step.key);
                     const isActive = activeStep === step.key && phase === 'running';
@@ -366,41 +371,49 @@ export function ContentGenerateModal({
                     return (
                       <motion.div
                         key={step.key}
-                        className={`admin-gen-step-card ${isDone ? 'done' : isActive ? 'active' : 'pending'}`}
+                        className={`admin-gen-step-card flex items-center gap-3.5 p-3 rounded-admin border transition-all ${
+                          isDone
+                            ? 'done border-admin-ok-border bg-admin-ok-subtle/30 text-admin-fg'
+                            : isActive
+                            ? 'active border-admin-accent bg-admin-accent/5 shadow-admin-sm text-admin-fg'
+                            : 'pending border-admin-border-subtle bg-admin-muted-bg/20 opacity-60 text-admin-muted'
+                        }`}
                         layout
                         transition={{ duration: 0.25 }}
                       >
                         {/* Distinct animated icon box for every step */}
-                        <div className={`admin-gen-icon-box ${step.iconClass}`}>
+                        <div className={`admin-gen-icon-box ${step.iconClass} w-8 h-8 rounded-admin flex items-center justify-center shrink-0 ${
+                          isDone ? 'bg-admin-ok text-admin-primary-fg' : isActive ? 'bg-admin-accent text-admin-accent-fg' : 'bg-admin-muted-bg text-admin-muted'
+                        }`}>
                           {isDone ? <Check size={18} strokeWidth={2.8} /> : isActive ? step.icon : step.icon}
                         </div>
 
-                        <div className="admin-gen-step-content">
-                          <div className="admin-gen-step-title-row">
-                            <span className="admin-gen-step-title">
+                        <div className="admin-gen-step-content flex-1 min-w-0">
+                          <div className="admin-gen-step-title-row flex items-center justify-between gap-2">
+                            <span className="admin-gen-step-title font-semibold text-xs text-admin-fg flex items-center gap-1.5">
                               {step.title}
                               {isActive && (
-                                <span className="admin-gen-dots">
-                                  <span />
-                                  <span />
-                                  <span />
+                                <span className="admin-gen-dots inline-flex gap-0.5">
+                                  <span className="w-1 h-1 rounded-full bg-admin-accent animate-pulse" />
+                                  <span className="w-1 h-1 rounded-full bg-admin-accent animate-pulse delay-100" />
+                                  <span className="w-1 h-1 rounded-full bg-admin-accent animate-pulse delay-200" />
                                 </span>
                               )}
                             </span>
 
                             {isDone && (
-                              <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--admin-ok)' }}>
+                              <span className="text-[0.6875rem] font-semibold text-admin-ok">
                                 Verified
                               </span>
                             )}
                             {isActive && (
-                              <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--admin-accent)' }}>
+                              <span className="text-[0.6875rem] font-semibold text-admin-accent">
                                 In Progress
                               </span>
                             )}
                           </div>
 
-                          <div className="admin-gen-step-desc">
+                          <div className="admin-gen-step-desc text-xs text-admin-muted mt-0.5 truncate">
                             {isActive ? (
                               step.key === 'llm' ? LLM_TIPS[llmTipIdx] : stepDetail
                             ) : (
@@ -416,27 +429,15 @@ export function ContentGenerateModal({
 
               {/* Error Message Display */}
               {phase === 'error' && (
-                <div
-                  style={{
-                    padding: '12px 14px',
-                    borderRadius: 8,
-                    background: 'var(--admin-destructive-subtle, #fef2f2)',
-                    border: '1px solid var(--admin-destructive-border, #fecaca)',
-                    color: 'var(--admin-destructive, #ef4444)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    fontSize: '0.8125rem',
-                  }}
-                >
-                  <AlertCircle size={16} style={{ flexShrink: 0 }} />
-                  <div style={{ flex: 1 }}>{errorMsg}</div>
+                <div className="p-3 rounded-admin bg-admin-destructive-subtle border border-admin-destructive-border text-admin-destructive flex items-center gap-2.5 text-xs font-medium">
+                  <AlertCircle size={16} className="shrink-0" />
+                  <div className="flex-1">{errorMsg}</div>
                 </div>
               )}
             </div>
 
             {/* Modal Footer */}
-            <div className="admin-gen-footer">
+            <div className="admin-gen-footer flex items-center justify-between px-6 py-3.5 border-t border-admin-border-subtle bg-admin-muted-bg/50">
               {phase === 'confirm' ? (
                 <>
                   <button
@@ -457,19 +458,19 @@ export function ContentGenerateModal({
                 </>
               ) : phase === 'running' ? (
                 <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8125rem' }}>
-                    <Loader2 size={13} className="animate-spin" style={{ color: 'var(--admin-accent)' }} />
+                  <div className="flex items-center gap-2 text-xs text-admin-muted">
+                    <Loader2 size={13} className="animate-spin text-admin-accent" />
                     <span>Processing verified specs with AI pool...</span>
                   </div>
-                  <span className="admin-text-xs admin-text-muted">Do not close window</span>
+                  <span className="text-xs text-admin-muted">Do not close window</span>
                 </>
               ) : phase === 'done' ? (
                 <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--admin-ok)', fontWeight: 600 }}>
+                  <div className="flex items-center gap-1.5 text-admin-ok font-semibold text-xs">
                     <CheckCircle2 size={16} />
                     <span>Generation Complete! Redirecting to studio...</span>
                   </div>
-                  <ArrowRight size={14} style={{ color: 'var(--admin-ok)' }} />
+                  <ArrowRight size={14} className="text-admin-ok" />
                 </>
               ) : (
                 <>

@@ -13,16 +13,11 @@ export interface GenerateResult {
   generator: string;
 }
 
-export async function generatePageContent(
-  pageType: PageType,
-  pageKey: string,
-  onStep?: (step: ContentGenStep, detail?: string) => void | Promise<void>
-): Promise<GenerateResult> {
+export async function generatePageContent(pageType: PageType, pageKey: string, onStep?: (step: ContentGenStep, detail?: string) => void | Promise<void>): Promise<GenerateResult> {
   await onStep?.('facts', 'Loading verified specifications, retailer offers, and catalog facts...');
   const facts = await buildFactSheet(pageType, pageKey);
   const problems = factSheetProblems(facts);
   if (problems.length) throw new Error(`Not enough verified facts to write from: ${problems.join('; ')}`);
-
   await onStep?.('llm', 'Invoking AI model to draft summary, editorial body, and shopper FAQs...');
   const { data, provider, model } = await generateJson({
     purpose: `content:${pageType}`,

@@ -16,40 +16,40 @@ export function ContentEditorClient({ row, facts, error }: { row: any; facts: an
   const back = `/admin/content/${row.id}`;
 
   return (
-    <div style={{ paddingBottom: 48 }}>
-      <nav className="admin-breadcrumb">
-        <Link href="/admin">Console</Link>
-        <span className="admin-breadcrumb-separator">/</span>
-        <Link href="/admin">Page Copy</Link>
-        <span className="admin-breadcrumb-separator">/</span>
-        <span>{row.pageType}</span>
+    <div className="pb-12 max-w-7xl mx-auto flex flex-col gap-6">
+      <nav className="admin-breadcrumb flex items-center gap-1.5 text-xs text-admin-muted">
+        <Link href="/admin" className="hover:text-admin-fg transition-colors">Console</Link>
+        <span className="text-admin-muted/60">/</span>
+        <Link href="/admin?tab=content" className="hover:text-admin-fg transition-colors">Page Copy</Link>
+        <span className="text-admin-muted/60">/</span>
+        <span className="text-admin-fg font-medium capitalize">{row.pageType}</span>
       </nav>
 
-      <div className="admin-page-header">
+      <div className="admin-page-header flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-admin-border-subtle">
         <div>
-          <div className="admin-flex admin-items-center admin-gap-3" style={{ marginBottom: 6 }}>
-            <h1 className="admin-page-title">{row.pageKey}</h1>
+          <div className="flex flex-wrap items-center gap-3 mb-1.5">
+            <h1 className="text-2xl font-bold tracking-tight text-admin-fg m-0 font-mono text-lg sm:text-2xl">{row.pageKey}</h1>
             <StatusBadge status={row.status} />
             <IssueBadge errors={errors.length} warnings={0} />
           </div>
 
-          <div className="admin-text-sm admin-text-muted admin-flex admin-items-center admin-gap-3">
-            <span>Type: {row.pageType}</span>
+          <div className="text-xs text-admin-muted flex flex-wrap items-center gap-2">
+            <span>Type: <span className="font-medium text-admin-fg capitalize">{row.pageType}</span></span>
             <span>·</span>
-            <span>Model: {row.generator ?? 'unknown'}</span>
+            <span>Model: <span className="font-medium text-admin-fg">{row.generator ?? 'unknown'}</span></span>
             <span>·</span>
             <span>Updated: {formatDate(new Date(row.updatedAt))}</span>
             {row.reviewedBy && (
               <>
                 <span>·</span>
-                <span style={{ color: 'var(--admin-ok)' }}>Approved by {row.reviewedBy}</span>
+                <span className="text-admin-ok font-medium">Approved by {row.reviewedBy}</span>
               </>
             )}
           </div>
         </div>
 
-        <div className="admin-header-actions">
-          <form className="admin-flex admin-items-center admin-gap-2">
+        <div className="admin-header-actions flex flex-wrap items-center gap-2 shrink-0">
+          <form className="flex items-center gap-2">
             <input type="hidden" name="id" value={row.id} />
             {row.status === 'review' && (
               <ConfirmFormButton
@@ -65,10 +65,13 @@ export function ContentEditorClient({ row, facts, error }: { row: any; facts: an
             )}
 
             {(row.status === 'review' || row.status === 'approved') && (
-              <ConfirmFormButton className="admin-btn admin-btn-outline"
+              <ConfirmFormButton
+                className="admin-btn admin-btn-outline"
                 dialogTitle="Reject & Send to Draft?"
                 dialogDescription="Return this copy to draft status for further revision?"
-                confirmText="Send to Draft" tone="destructive" formAction={rejectContent}
+                confirmText="Send to Draft"
+                tone="destructive"
+                formAction={rejectContent}
               >
                 Back to Draft
               </ConfirmFormButton>
@@ -106,28 +109,54 @@ export function ContentEditorClient({ row, facts, error }: { row: any; facts: an
               </div>
             </CardHeader>
             <CardContent>
-              <form action={saveContent} style={{ display: 'grid', gap: 20 }}>
+              <form action={saveContent} className="grid gap-5">
                 <input type="hidden" name="id" value={row.id} />
 
-                <div className="admin-form-group">
-                  <label className="admin-label">Summary (Answer-first Lead Paragraph)</label>
-                  <textarea name="summary" rows={3} className="admin-textarea" defaultValue={row.summary ?? ''} placeholder="Concise overview summarizing the product or guide..." />
-                  <span className="admin-form-hint">Displayed at the top of the page and in meta descriptions.</span>
+                <div className="admin-form-group flex flex-col gap-1.5">
+                  <label className="admin-label font-medium text-xs text-admin-fg">Summary (Answer-first Lead Paragraph)</label>
+                  <textarea
+                    name="summary"
+                    rows={3}
+                    className="admin-textarea w-full text-sm leading-relaxed"
+                    defaultValue={row.summary ?? ''}
+                    placeholder="Concise overview summarizing the product or guide..."
+                  />
+                  <span className="admin-form-hint text-[11px] text-admin-muted leading-tight mt-0.5">
+                    Displayed at the top of the page and in meta descriptions.
+                  </span>
                 </div>
 
-                <div className="admin-form-group">
-                  <label className="admin-label">Body Content (Markdown paragraphs separated by a blank line)</label>
-                  <textarea name="body" rows={12} className="admin-textarea" style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '0.84375rem' }} defaultValue={row.bodyMd ?? ''} placeholder="Full body article content..." />
+                <div className="admin-form-group flex flex-col gap-1.5">
+                  <label className="admin-label font-medium text-xs text-admin-fg">Body Content (Markdown paragraphs separated by a blank line)</label>
+                  <textarea
+                    name="body"
+                    rows={12}
+                    className="admin-textarea w-full font-mono text-xs leading-relaxed"
+                    defaultValue={row.bodyMd ?? ''}
+                    placeholder="Full body article content..."
+                  />
                 </div>
 
-                <div className="admin-form-group">
-                  <label className="admin-label">Frequently Asked Questions (JSON list of &#123;"question", "answer"&#125;)</label>
-                  <textarea name="faq" rows={8} className="admin-textarea" style={{ fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '0.8125rem' }} defaultValue={JSON.stringify(row.faq, null, 2)} />
-                  <span className="admin-form-hint">Validated against schema format: array of objects with question and answer strings.</span>
+                <div className="admin-form-group flex flex-col gap-1.5">
+                  <label className="admin-label font-medium text-xs text-admin-fg">Frequently Asked Questions (JSON list of &#123;&quot;question&quot;, &quot;answer&quot;&#125;)</label>
+                  <textarea
+                    name="faq"
+                    rows={8}
+                    className="admin-textarea w-full font-mono text-xs leading-relaxed"
+                    defaultValue={JSON.stringify(row.faq, null, 2)}
+                  />
+                  <span className="admin-form-hint text-[11px] text-admin-muted leading-tight mt-0.5">
+                    Validated against schema format: array of objects with question and answer strings.
+                  </span>
                 </div>
 
-                <div>
-                  <ConfirmFormButton className="admin-btn admin-btn-primary" dialogTitle="Save Copy and Re-check?" dialogDescription="Save your copy edits? The script will immediately re-verify claims against ground-truth database facts." confirmText="Save & Re-check">
+                <div className="pt-2">
+                  <ConfirmFormButton
+                    className="admin-btn admin-btn-primary"
+                    dialogTitle="Save Copy and Re-check?"
+                    dialogDescription="Save your copy edits? The script will immediately re-verify claims against ground-truth database facts."
+                    confirmText="Save & Re-check"
+                  >
                     <Save size={14} />
                     Save Changes & Re-check
                   </ConfirmFormButton>
@@ -149,24 +178,24 @@ export function ContentEditorClient({ row, facts, error }: { row: any; facts: an
             </CardHeader>
             <CardContent>
               {errors.length === 0 ? (
-                <div className="admin-flex admin-items-center admin-gap-3" style={{ color: 'var(--admin-ok)', padding: 16 }}>
-                  <CheckCircle2 size={24} />
+                <div className="flex items-center gap-3 p-4 rounded-admin-lg bg-admin-ok-subtle border border-admin-ok-border text-admin-ok">
+                  <CheckCircle2 size={24} className="shrink-0" />
                   <div>
-                    <div style={{ fontWeight: 600 }}>Passed All Automated Checks</div>
-                    <div className="admin-text-sm admin-text-muted">
+                    <div className="font-semibold text-sm">Passed All Automated Checks</div>
+                    <div className="text-xs text-admin-muted mt-0.5">
                       No invented specs, hallucinated prices, or unauthorized claims detected in this copy.
                     </div>
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gap: 12 }}>
-                  <div style={{ padding: '12px 16px', borderRadius: 8, backgroundColor: 'var(--admin-destructive-subtle)', border: '1px solid var(--admin-destructive-border)', color: 'var(--admin-destructive)', fontSize: '0.875rem', fontWeight: 600, }}>
+                <div className="grid gap-3">
+                  <div className="p-3.5 rounded-admin-lg bg-admin-destructive-subtle border border-admin-destructive-border text-admin-destructive text-sm font-semibold">
                     Found {errors.length} validation {errors.length === 1 ? 'issue' : 'issues'} that must be corrected:
                   </div>
 
-                  <ul style={{ margin: 0, paddingLeft: 20, lineHeight: 1.8 }}>
+                  <ul className="m-0 pl-5 text-xs leading-relaxed space-y-1">
                     {errors.map((e, idx) => (
-                      <li key={idx} style={{ color: 'var(--admin-destructive)', fontSize: '0.84375rem' }}>
+                      <li key={idx} className="text-admin-destructive font-medium">
                         {e}
                       </li>
                     ))}
@@ -186,7 +215,7 @@ export function ContentEditorClient({ row, facts, error }: { row: any; facts: an
               </div>
             </CardHeader>
             <CardContent noPadding>
-              <pre style={{ margin: 0, padding: 20, backgroundColor: 'var(--admin-muted-bg)', fontSize: '0.8125rem', lineHeight: 1.5, overflowX: 'auto', fontFamily: 'ui-monospace, monospace', color: 'var(--admin-fg)', }}>
+              <pre className="m-0 p-5 bg-admin-muted-bg text-admin-fg font-mono text-xs leading-relaxed overflow-x-auto rounded-b-admin-xl">
                 {JSON.stringify(facts, null, 2)}
               </pre>
             </CardContent>

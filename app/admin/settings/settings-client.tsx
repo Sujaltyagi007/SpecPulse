@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/admin/toast';
 import { Avatar } from '@/components/admin/avatar';
@@ -10,7 +11,7 @@ import React, { useEffect, useId, useRef, useState } from 'react';
 import { FadeIn, MotionButton, spring } from '@/components/admin/motion';
 import { ACCENTS, DEFAULT_THEME, PRESETS, type AdminTheme } from '@/lib/admin-theme';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/admin/card';
-import { Camera, Flame, Monitor, Moon, Palette, Snowflake, Sun, Trash2, UserRound, Circle } from 'lucide-react';
+import { Camera, ChevronRight, Flame, KeyRound, Monitor, Moon, Palette, Snowflake, Sun, Trash2, UserRound, Circle } from 'lucide-react';
 
 const AVATAR_PX = 160;
 
@@ -40,16 +41,16 @@ function sameTheme(a: AdminTheme, b: AdminTheme) {
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div className="admin-field">
-      <span>{label}</span>
+    <div className="admin-field flex flex-col gap-1.5">
+      <span className="text-xs font-semibold text-admin-fg">{label}</span>
       {children}
-      {hint && <span className="admin-field-hint">{hint}</span>}
+      {hint && <span className="admin-field-hint text-xs text-admin-muted leading-relaxed">{hint}</span>}
     </div>
   );
 }
 
 function ColorInput({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
-  return <input type="color" className="admin-color-input" value={value} onChange={(e) => onChange(e.target.value)} aria-label={label} />;
+  return <input type="color" className="admin-color-input w-8 h-8 rounded-admin border border-admin-border cursor-pointer bg-transparent p-0.5" value={value} onChange={(e) => onChange(e.target.value)} aria-label={label} />;
 }
 
 export function SettingsClient() {
@@ -116,27 +117,40 @@ export function SettingsClient() {
   const customAccent = !ACCENTS.some((a) => a.value === theme.accent);
 
   return (
-    <div style={{ padding: '28px 0 48px' }}>
+    <div className="py-7 pb-12 max-w-5xl mx-auto flex flex-col gap-6">
       <FadeIn>
-        <h1 className="admin-page-title" style={{ margin: 0 }}>Settings</h1>
-        <p className="admin-page-description" style={{ marginBottom: 20 }}>
+        <h1 className="text-2xl font-bold tracking-tight text-admin-fg m-0">Settings</h1>
+        <p className="text-sm text-admin-muted mt-1 mb-5">
           Your profile and how the dashboard looks for you. Other admins keep their own settings.
         </p>
+        <Link
+          href="/admin/settings/integrations"
+          className="flex items-center gap-3 rounded-admin-lg border border-admin-border bg-admin-surface px-4 py-3 no-underline text-admin-fg hover:border-admin-accent transition-colors"
+        >
+          <span className="inline-flex rounded-admin bg-admin-muted-bg p-2 text-admin-accent">
+            <KeyRound size={16} />
+          </span>
+          <span className="flex-1">
+            <span className="block text-sm font-semibold">AI &amp; API keys</span>
+            <span className="block text-xs text-admin-muted">API keys, image model and banner prompts, shared by all admins</span>
+          </span>
+          <ChevronRight size={16} className="text-admin-muted" />
+        </Link>
       </FadeIn>
 
-      <div className="admin-settings-grid">
+      <div className="admin-settings-grid grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <FadeIn delay={0.05}>
           <Card>
             <CardHeader>
               <div>
-                <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <UserRound size={17} style={{ color: 'var(--admin-accent)' }} /> Profile
+                <CardTitle className="flex items-center gap-2">
+                  <UserRound size={17} className="text-admin-accent" /> Profile
                 </CardTitle>
                 <CardDescription>Shown in the header and on approvals you make.</CardDescription>
               </div>
             </CardHeader>
-            <CardContent style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-              <div className="admin-flex admin-items-center admin-gap-3">
+            <CardContent className="flex flex-col gap-4.5 p-6">
+              <div className="flex items-center gap-3">
                 <motion.button
                   type="button"
                   onClick={() => fileRef.current?.click()}
@@ -173,7 +187,7 @@ export function SettingsClient() {
                     <Camera size={20} />
                   </motion.span>
                 </motion.button>
-                <div className="admin-flex admin-gap-2" style={{ flexWrap: 'wrap' }}>
+                <div className="flex gap-2" style={{ flexWrap: 'wrap' }}>
                   <MotionButton type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => fileRef.current?.click()}>
                     <Camera size={13} /> Upload photo
                   </MotionButton>
@@ -201,7 +215,7 @@ export function SettingsClient() {
                 <input className="admin-input" value={role} maxLength={60} onChange={(e) => setRole(e.target.value)} />
               </Field>
               <Field label="Login">
-                <span className="admin-text-sm admin-text-muted">@{identity.username}</span>
+                <span className="text-admin-sm text-admin-muted">@{identity.username}</span>
               </Field>
             </CardContent>
           </Card>
@@ -212,8 +226,8 @@ export function SettingsClient() {
             <div id="appearance" />
             <CardHeader>
               <div>
-                <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Palette size={17} style={{ color: 'var(--admin-accent)' }} /> Appearance
+                <CardTitle className="flex items-center gap-2">
+                  <Palette size={17} className="text-admin-accent" /> Appearance
                 </CardTitle>
                 <CardDescription>Changes preview live. Save to keep them.</CardDescription>
               </div>
@@ -221,7 +235,7 @@ export function SettingsClient() {
                 Reset
               </MotionButton>
             </CardHeader>
-            <CardContent style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <CardContent className="flex flex-col gap-5 p-6">
               <Field label="Quick looks">
                 <div className="admin-option-row">
                   {PRESETS.map((p) => {
@@ -333,7 +347,7 @@ export function SettingsClient() {
                 </div>
               </Field>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field label="Mode">
                   <Segmented
                     ariaLabel="Color mode"
@@ -383,15 +397,21 @@ export function SettingsClient() {
               </div>
 
               <Field label="Preview">
-                <div className="admin-preview">
-                  <div className="admin-flex admin-items-center admin-gap-2" style={{ flexWrap: 'wrap' }}>
+                <div className="admin-preview p-4 rounded-admin border border-admin-border bg-admin-muted-bg/30 flex flex-col gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
                     <MotionButton type="button" className="admin-btn admin-btn-primary admin-btn-sm">Primary</MotionButton>
                     <MotionButton type="button" className="admin-btn admin-btn-secondary admin-btn-sm">Secondary</MotionButton>
-                    <span className="admin-badge admin-badge-ok"><span className="admin-badge-indicator" />Live</span>
-                    <span className="admin-badge admin-badge-warn"><span className="admin-badge-indicator" />In review</span>
-                    <a style={{ color: 'var(--admin-accent)', fontSize: '0.8125rem' }}>A link</a>
+                    <span className="admin-badge admin-badge-ok inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium bg-admin-ok-subtle text-admin-ok border border-admin-ok-border">
+                      <span className="w-1.5 h-1.5 rounded-full bg-admin-ok" />
+                      Live
+                    </span>
+                    <span className="admin-badge admin-badge-warn inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium bg-admin-warn-subtle text-admin-warn border border-admin-warn-border">
+                      <span className="w-1.5 h-1.5 rounded-full bg-admin-warn" />
+                      In review
+                    </span>
+                    <a className="text-admin-accent text-xs cursor-pointer hover:underline">A link</a>
                   </div>
-                  <input className="admin-input" placeholder="Input field" />
+                  <input className="admin-input w-full" placeholder="Input field preview" readOnly />
                 </div>
               </Field>
             </CardContent>
@@ -402,17 +422,17 @@ export function SettingsClient() {
       <AnimatePresence>
         {dirty && (
           <motion.div
-            className="admin-save-bar"
+            className="admin-save-bar fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between gap-6 px-5 py-3 rounded-admin-lg bg-admin-surface border border-admin-border shadow-admin-xl backdrop-blur-md max-w-lg w-[calc(100%-2rem)]"
             initial={{ y: 80, opacity: 0, scale: 0.96 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 80, opacity: 0, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 380, damping: 28 }}
           >
-            <span className="admin-text-sm">
-              <span className="admin-dot" style={{ background: 'var(--admin-warn)' }} />
+            <span className="text-xs font-medium text-admin-fg flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-admin-warn animate-pulse" />
               Unsaved changes{themeDirty && ' (previewing)'}
             </span>
-            <div className="admin-flex admin-gap-2">
+            <div className="flex items-center gap-2">
               <MotionButton type="button" className="admin-btn admin-btn-ghost admin-btn-sm" onClick={discard} disabled={saving}>
                 Discard
               </MotionButton>

@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { ArrowRight, ChevronRight, Search } from 'lucide-react';
 import { Fragment } from 'react/jsx-runtime';
+import { ArrowRight, ChevronRight, Search } from 'lucide-react';
 
 export function Breadcrumb({ items }: { items: { label: string; href?: string }[] }) {
   return (
@@ -16,19 +16,7 @@ export function Breadcrumb({ items }: { items: { label: string; href?: string }[
   );
 }
 
-export function PageHeader({
-  eyebrow,
-  title,
-  lead,
-  icon,
-  children,
-}: {
-  eyebrow?: React.ReactNode;
-  title: React.ReactNode;
-  lead?: React.ReactNode;
-  icon?: React.ReactNode;
-  children?: React.ReactNode;
-}) {
+export function PageHeader({ eyebrow, title, lead, icon, children }: { eyebrow?: React.ReactNode; title: React.ReactNode; lead?: React.ReactNode; icon?: React.ReactNode; children?: React.ReactNode; }) {
   return (
     <header className={icon ? 'page-head has-icon' : 'page-head'}>
       {icon && <span className="page-head-icon">{icon}</span>}
@@ -71,17 +59,7 @@ export function SearchForm({ defaultValue, size = 'md', autoFocus }: { defaultVa
   return (
     <form action="/search" method="get" role="search" className={`search-form search-${size}`}>
       <Search size={size === 'lg' ? 20 : 16} aria-hidden />
-      <input
-        type="search"
-        name="q"
-        defaultValue={defaultValue}
-        placeholder="Search products, comparisons, guides…"
-        aria-label="Search SpecPulse"
-        autoComplete="off"
-        autoFocus={autoFocus}
-        minLength={2}
-        required
-      />
+      <input type="search" name="q" defaultValue={defaultValue} placeholder="Search products, comparisons, guides…" aria-label="Search SpecPulse" autoComplete="off" autoFocus={autoFocus} minLength={2} required />
       {size === 'lg' && <button type="submit" className="btn">Search</button>}
     </form>
   );

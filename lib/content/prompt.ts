@@ -33,7 +33,7 @@ export function userPrompt(f: FactSheet): string {
   if (f.pageType === 'product') {
     const p = f.products[0]!;
     task = `Page: the specification page for the ${p.name}.
-Main question: what are the key specs of the ${p.name}, and who is it a good fit for?`;
+    Main question: what are the key specs of the ${p.name}, and who is it a good fit for?`;
   } else if (f.pageType === 'comparison') {
     const [a, b] = f.products as [FactSheet['products'][number], FactSheet['products'][number]];
     task = `Page: ${a.name} vs ${b.name}.
@@ -42,10 +42,8 @@ Main question: what are the key specs of the ${p.name}, and who is it a good fit
   } else {
     const r = f.roundup!;
     task = `Page: ${r.title}${r.useCase ? ` (${r.useCase})` : ''}.
-An editor chose the picks, their order and their labels. Explain each pick in rank order using its specs. Do not change, reorder or question the ranking.`;
+    An editor chose the picks, their order and their labels. Explain each pick in rank order using its specs. Do not change, reorder or question the ranking.`;
   }
   return `${task}
-
-FACTS:
-${JSON.stringify(f, null, 2)}`;
+  FACTS: ${JSON.stringify(f, null, 2)}`;
 }

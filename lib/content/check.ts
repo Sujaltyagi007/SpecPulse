@@ -14,14 +14,10 @@ export function checkCopy(copy: PageCopy, facts: FactSheet): string[] {
   facts.roundup?.picks.forEach((p) => allowed.add(String(p.rank)));
   const unknown = [...numbersIn(allText)].filter((n) => !allowed.has(n));
   if (unknown.length) errors.push(`Numbers not in the verified facts: ${unknown.join(', ')}`);
-
   if (/[$€£₹¥]|\b(USD|EUR|GBP|INR)\b/.test(allText)) errors.push('Mentions a price or currency');
   if (/https?:\/\/|www\./i.test(allText)) errors.push('Contains a URL');
-  if (/\b(we|I)\s+(tested|test|measured|tried|used|wore|reviewed)\b|\b(our|my)\s+(testing|tests|experience)\b|\bhands-on\b/i.test(allText)) {
-    errors.push('Claims hands-on testing or personal experience');
-  }
+  if (/\b(we|I)\s+(tested|test|measured|tried|used|wore|reviewed)\b|\b(our|my)\s+(testing|tests|experience)\b|\bhands-on\b/i.test(allText)) { errors.push('Claims hands-on testing or personal experience') }
   if (/^\s*(#{1,6}\s|[-*]\s|\d+\.\s)/m.test(allText)) errors.push('Uses markdown headings or lists');
-
   if (copy.summary.length < 40) errors.push('Summary is too short');
   if (copy.summary.length > 400) errors.push('Summary is longer than 400 characters');
   if (copy.body.length < 300) errors.push('Body is too short');

@@ -16,9 +16,7 @@ export function ArticleBody({ markdown, sourceCount }: { markdown: string; sourc
     } else if (lines.every((l) => /^\s*[-*]\s+/.test(l))) {
       out.push(
         <ul key={i}>
-          {lines.map((l, j) => (
-            <li key={j}>{inline(l.replace(/^\s*[-*]\s+/, ''), sourceCount)}</li>
-          ))}
+          {lines.map((l, j) => <li key={j}>{inline(l.replace(/^\s*[-*]\s+/, ''), sourceCount)}</li>)}
         </ul>,
       );
     } else {

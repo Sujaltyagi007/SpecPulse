@@ -12,32 +12,39 @@ export default async function NewProductPage({ searchParams }: { searchParams: P
   const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } });
 
   return (
-    <div style={{ padding: '24px 0 48px', maxWidth: 640 }}>
-      <nav className="admin-breadcrumb">
-        <Link href="/admin?tab=products">Products</Link>
-        <span className="admin-breadcrumb-separator">/</span>
-        <span>New</span>
+    <div className="py-6 pb-12 max-w-xl flex flex-col gap-6">
+      <nav className="admin-breadcrumb flex items-center gap-1.5 text-xs text-admin-muted">
+        <Link href="/admin" className="hover:text-admin-fg transition-colors">Console</Link>
+        <span className="text-admin-muted/60">/</span>
+        <Link href="/admin?tab=products" className="hover:text-admin-fg transition-colors">Products</Link>
+        <span className="text-admin-muted/60">/</span>
+        <span className="text-admin-fg font-medium">New</span>
       </nav>
-      <h1 className="admin-page-title" style={{ marginBottom: 16 }}>Add a product</h1>
+
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-admin-fg m-0">Add a product</h1>
+        <p className="text-sm text-admin-muted mt-1">Create a new product draft to verify specifications and track pricing.</p>
+      </div>
+
       <ActionError message={error} />
 
       <Card>
         <CardHeader>
           <div>
-            <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <PackagePlus size={17} style={{ color: 'var(--admin-accent)' }} /> Basic details
+            <CardTitle className="flex items-center gap-2 text-base font-semibold">
+              <PackagePlus size={18} className="text-admin-accent" /> Basic details
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="mt-1">
               It starts as a draft. Next you&apos;ll add and verify its specs, then use &quot;Find prices now&quot; to pull retailer
               prices. Nothing goes live until it passes the checks and you approve it.
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
-          <form action={createProduct} style={{ display: 'grid', gap: 16 }}>
-            <div className="admin-form-group">
-              <label className="admin-label" htmlFor="categoryId">Category</label>
-              <select id="categoryId" name="categoryId" className="admin-select" required>
+          <form action={createProduct} className="grid gap-5">
+            <div className="admin-form-group flex flex-col gap-1.5">
+              <label className="admin-label font-medium text-xs text-admin-fg" htmlFor="categoryId">Category</label>
+              <select id="categoryId" name="categoryId" className="admin-select w-full" required>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -45,28 +52,36 @@ export default async function NewProductPage({ searchParams }: { searchParams: P
                 ))}
               </select>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-              <div className="admin-form-group">
-                <label className="admin-label" htmlFor="brand">Brand</label>
-                <input id="brand" name="brand" className="admin-input" required placeholder="Sony" />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="admin-form-group flex flex-col gap-1.5">
+                <label className="admin-label font-medium text-xs text-admin-fg" htmlFor="brand">Brand</label>
+                <input id="brand" name="brand" className="admin-input w-full" required placeholder="Sony" />
               </div>
-              <div className="admin-form-group">
-                <label className="admin-label" htmlFor="model">Model</label>
-                <input id="model" name="model" className="admin-input" required placeholder="WF-1000XM5" />
-                <span className="admin-form-hint">Include the generation number (&quot;AirPods Pro 2&quot;), or price matching may pick up the wrong model.</span>
+              <div className="admin-form-group flex flex-col gap-1.5">
+                <label className="admin-label font-medium text-xs text-admin-fg" htmlFor="model">Model</label>
+                <input id="model" name="model" className="admin-input w-full" required placeholder="WF-1000XM5" />
+                <span className="admin-form-hint text-[11px] text-admin-muted leading-tight mt-0.5">
+                  Include generation number (&quot;AirPods Pro 2&quot;), or price matching may pick up the wrong model.
+                </span>
               </div>
             </div>
-            <div className="admin-form-group">
-              <label className="admin-label" htmlFor="title">Page title (optional)</label>
-              <input id="title" name="title" className="admin-input" placeholder="Defaults to brand + model" />
+
+            <div className="admin-form-group flex flex-col gap-1.5">
+              <label className="admin-label font-medium text-xs text-admin-fg" htmlFor="title">Page title (optional)</label>
+              <input id="title" name="title" className="admin-input w-full" placeholder="Defaults to brand + model" />
             </div>
-            <div className="admin-form-group">
-              <label className="admin-label" htmlFor="gtin">GTIN / UPC / EAN (optional)</label>
-              <input id="gtin" name="gtin" className="admin-input" inputMode="numeric" placeholder="Barcode number from the box or retailer listing" />
-              <span className="admin-form-hint">Needed before the product can go live; you can add it later.</span>
+
+            <div className="admin-form-group flex flex-col gap-1.5">
+              <label className="admin-label font-medium text-xs text-admin-fg" htmlFor="gtin">GTIN / UPC / EAN (optional)</label>
+              <input id="gtin" name="gtin" className="admin-input w-full" inputMode="numeric" placeholder="Barcode number from the box or retailer listing" />
+              <span className="admin-form-hint text-[11px] text-admin-muted leading-tight mt-0.5">
+                Needed before the product can go live; you can add it later.
+              </span>
             </div>
-            <div>
-              <button className="admin-btn admin-btn-primary">Create draft</button>
+
+            <div className="pt-2">
+              <button className="admin-btn admin-btn-primary px-4 py-2 font-medium">Create draft</button>
             </div>
           </form>
         </CardContent>

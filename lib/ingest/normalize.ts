@@ -41,9 +41,7 @@ export function retailerDomain(url: string): string | null {
 }
 
 export function retailerSlug(name: string): string {
-  return name.toLowerCase()
-    .replace(/\.(com|net|co\.uk|ca|com\.au|de|in)$/, '')
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return name.toLowerCase().replace(/\.(com|net|co\.uk|ca|com\.au|de|in)$/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 export interface NormalizedOffer {

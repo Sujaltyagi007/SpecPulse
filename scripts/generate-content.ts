@@ -21,9 +21,7 @@ try {
     await one(mode, arg);
   } else if (mode === 'missing') {
     const limit = Number(arg ?? 10);
-    const haveCopy = new Set(
-      (await prisma.pageContent.findMany({ where: { pageType: 'product' }, select: { pageKey: true } })).map((c) => c.pageKey),
-    );
+    const haveCopy = new Set((await prisma.pageContent.findMany({ where: { pageType: 'product' }, select: { pageKey: true } })).map((c) => c.pageKey));
     const products = await prisma.product.findMany({
       where: { status: { in: ['review', 'approved', 'published'] } },
       orderBy: { updatedAt: 'asc' },

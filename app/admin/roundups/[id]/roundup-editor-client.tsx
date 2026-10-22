@@ -18,35 +18,39 @@ export function RoundupEditorClient({ roundup, candidates, copy, error }: {
   const back = `/admin/roundups/${roundup.id}`;
 
   return (
-    <div style={{ paddingBottom: 48 }}>
-      <nav className="admin-breadcrumb">
-        <Link href="/admin">Console</Link>
-        <span className="admin-breadcrumb-separator">/</span>
-        <Link href="/admin/roundups">Roundups</Link>
-        <span className="admin-breadcrumb-separator">/</span>
-        <span>{roundup.category.name}</span>
+    <div className="pb-12 max-w-7xl mx-auto flex flex-col gap-6">
+      <nav className="admin-breadcrumb flex items-center gap-1.5 text-xs text-admin-muted">
+        <Link href="/admin" className="hover:text-admin-fg transition-colors">Console</Link>
+        <span className="text-admin-muted/60">/</span>
+        <Link href="/admin?tab=roundups" className="hover:text-admin-fg transition-colors">Roundups</Link>
+        <span className="text-admin-muted/60">/</span>
+        <span className="text-admin-fg font-medium">{roundup.category.name}</span>
       </nav>
 
-      <div className="admin-page-header">
+      <div className="admin-page-header flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-admin-border-subtle">
         <div>
-          <div className="admin-flex admin-items-center admin-gap-3" style={{ marginBottom: 6 }}>
-            <h1 className="admin-page-title">{roundup.title}</h1>
+          <div className="flex flex-wrap items-center gap-3 mb-1.5">
+            <h1 className="text-2xl font-bold tracking-tight text-admin-fg m-0">{roundup.title}</h1>
             <StatusBadge status={roundup.status} />
           </div>
 
-          <div className="admin-text-sm admin-text-muted admin-flex admin-items-center admin-gap-3">
-            <span>Category: {roundup.category.name}</span>
+          <div className="text-xs text-admin-muted flex flex-wrap items-center gap-2">
+            <span>Category: <span className="font-medium text-admin-fg">{roundup.category.name}</span></span>
             {roundup.useCase && (
               <Fragment>
                 <span>·</span>
-                <span>Focus: {roundup.useCase}</span>
+                <span>Focus: <span className="font-medium text-admin-fg">{roundup.useCase}</span></span>
               </Fragment>
             )}
             {locked && (
               <Fragment>
                 <span>·</span>
-                <Link href={`/best/${roundup.slug}`} target="_blank" className="admin-external-link" style={{ padding: 0 }}>
-                  View live guide <ExternalLink size={12} />
+                <Link
+                  href={`/best/${roundup.slug}`}
+                  target="_blank"
+                  className="text-admin-accent inline-flex items-center gap-1 hover:underline"
+                >
+                  View live guide <ExternalLink size={11} />
                 </Link>
               </Fragment>
             )}
@@ -54,12 +58,11 @@ export function RoundupEditorClient({ roundup, candidates, copy, error }: {
         </div>
 
         {locked && (
-          <form action={unpublishPage} className="admin-header-actions">
+          <form action={unpublishPage} className="admin-header-actions shrink-0">
             <input type="hidden" name="pageType" value="roundup" />
             <input type="hidden" name="id" value={roundup.id} />
             <ConfirmFormButton
-              className="admin-btn admin-btn-outline"
-              style={{ color: 'var(--admin-destructive)' }}
+              className="admin-btn admin-btn-outline text-admin-destructive hover:bg-admin-destructive-subtle"
               dialogTitle="Unpublish Roundup Guide?"
               dialogDescription="This will take the live buyer's guide offline and revert it to draft status."
               confirmText="Unpublish Guide"
@@ -93,7 +96,7 @@ export function RoundupEditorClient({ roundup, candidates, copy, error }: {
             <CardHeader>
               <div>
                 <CardTitle>Curated Product Rankings ({roundup.items.length})</CardTitle>
-                <CardDescription>
+                <CardDescription className="mt-1">
                   Editorial ranking of recommended products. Modifying picks reverts editorial copy to draft status.
                   {locked && ' Unpublish this roundup to edit or rearrange picks.'}
                 </CardDescription>
@@ -102,73 +105,62 @@ export function RoundupEditorClient({ roundup, candidates, copy, error }: {
 
             <CardContent noPadding>
               {roundup.items.length === 0 ? (
-                <div style={{ padding: 32 }}>
-                  <p className="admin-text-muted" style={{ margin: 0 }}>
-                    No picks added yet. Switch to the "Add / Update Pick" tab to add products.
+                <div className="p-8 text-center">
+                  <p className="text-sm text-admin-muted m-0">
+                    No picks added yet. Switch to the &quot;Add / Update Pick&quot; tab to add products.
                   </p>
                 </div>
               ) : (
-                <div className="admin-table-container">
-                  <table className="admin-table">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr>
-                        <th style={{ width: 80 }}>Rank</th>
-                        <th>Product</th>
-                        <th>Editorial Award Label</th>
-                        {!locked && <th style={{ textAlign: 'right', width: 100 }}>Action</th>}
+                      <tr className="border-b border-admin-border-subtle bg-admin-muted-bg/50">
+                        <th className="py-2.5 px-4 font-semibold text-admin-muted w-16">Rank</th>
+                        <th className="py-2.5 px-4 font-semibold text-admin-muted">Product</th>
+                        <th className="py-2.5 px-4 font-semibold text-admin-muted">Editorial Award Label</th>
+                        {!locked && <th className="py-2.5 px-4 font-semibold text-admin-muted text-right w-24">Action</th>}
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-admin-border-subtle">
                       {roundup.items.map((item: any) => (
-                        <tr key={item.productId}>
-                          <td>
-                            <span style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              width: 26,
-                              height: 26,
-                              borderRadius: '50%',
-                              background: 'var(--admin-primary)',
-                              color: 'var(--admin-primary-fg)',
-                              fontWeight: 700,
-                              fontSize: '0.8125rem',
-                            }}>{item.rank}</span></td>
+                        <tr key={item.productId} className="hover:bg-admin-hover/40 transition-colors">
+                          <td className="py-3 px-4">
+                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-admin-primary text-admin-primary-fg font-bold text-xs">
+                              {item.rank}
+                            </span>
+                          </td>
 
-                          <td>
-                            <Link href={`/admin/products/${item.productId}`} style={{
-                              fontWeight: 600,
-                              color: 'var(--admin-fg)',
-                              textDecoration: 'none',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 4,
-                            }}>
+                          <td className="py-3 px-4">
+                            <Link
+                              href={`/admin/products/${item.productId}`}
+                              className="font-medium text-admin-fg inline-flex items-center gap-1 hover:text-admin-accent transition-colors"
+                            >
                               {item.product.title}
-                              <ArrowUpRight size={12} style={{ color: 'var(--admin-muted)' }} />
+                              <ArrowUpRight size={12} className="text-admin-muted" />
                             </Link>
-                            <div className="admin-text-xs admin-text-muted">
-                              Status: {item.product.status}
+                            <div className="text-[11px] text-admin-muted mt-0.5">
+                              Status: <span className="capitalize">{item.product.status}</span>
                               {item.product.status !== 'published' && ' (not live on site yet)'}
                             </div>
                           </td>
 
-                          <td>
+                          <td className="py-3 px-4">
                             {item.label ? (
-                              <span className="admin-badge admin-badge-ok">{item.label}</span>
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-admin-ok-subtle text-admin-ok border border-admin-ok-border">
+                                {item.label}
+                              </span>
                             ) : (
-                              <span className="admin-text-muted">—</span>
+                              <span className="text-admin-muted">—</span>
                             )}
                           </td>
 
                           {!locked && (
-                            <td style={{ textAlign: 'right' }}>
+                            <td className="py-3 px-4 text-right">
                               <form action={removeRoundupItem}>
                                 <input type="hidden" name="roundupId" value={roundup.id} />
                                 <input type="hidden" name="productId" value={item.productId} />
                                 <ConfirmFormButton
-                                  className="admin-btn admin-btn-ghost admin-btn-sm"
-                                  style={{ color: 'var(--admin-destructive)' }}
+                                  className="admin-btn admin-btn-ghost admin-btn-sm text-admin-destructive hover:bg-admin-destructive-subtle"
                                   dialogTitle="Remove Pick from Roundup?"
                                   dialogDescription={`Remove "${item.product.title}" from this roundup? This will mark copy as requiring regeneration.`}
                                   confirmText="Remove Pick"
@@ -196,37 +188,38 @@ export function RoundupEditorClient({ roundup, candidates, copy, error }: {
               <CardHeader>
                 <div>
                   <CardTitle>Add or Re-rank Product Pick</CardTitle>
-                  <CardDescription>
-                    Select any non-archived product from category "{roundup.category.name}" to assign a ranking.
+                  <CardDescription className="mt-1">
+                    Select any non-archived product from category &quot;{roundup.category.name}&quot; to assign a ranking.
                   </CardDescription>
                 </div>
               </CardHeader>
               <CardContent>
-                <form action={saveRoundupItem} style={{ display: 'grid', gap: 16, maxWidth: 600 }}>
+                <form action={saveRoundupItem} className="grid gap-4 max-w-lg">
                   <input type="hidden" name="roundupId" value={roundup.id} />
 
-                  <div className="admin-form-group">
-                    <label className="admin-label">Product</label>
-                    <select name="productId" required className="admin-select">
+                  <div className="admin-form-group flex flex-col gap-1.5">
+                    <label className="admin-label font-medium text-xs text-admin-fg">Product</label>
+                    <select name="productId" required className="admin-select w-full">
                       <option value="">Choose product...</option>
                       {candidates.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
                     </select>
                   </div>
 
-                  <div className="admin-form-group">
-                    <label className="admin-label">Rank Order Position</label>
-                    <input name="rank" type="number" min={1} required className="admin-input" defaultValue={roundup.items.length + 1} />
+                  <div className="admin-form-group flex flex-col gap-1.5">
+                    <label className="admin-label font-medium text-xs text-admin-fg">Rank Order Position</label>
+                    <input name="rank" type="number" min={1} required className="admin-input w-full" defaultValue={roundup.items.length + 1} />
                   </div>
 
-                  <div className="admin-form-group">
-                    <label className="admin-label">
-                      Editorial Award Label <span className="admin-label-optional">(e.g. Best overall, Best budget, Best battery)</span>
+                  <div className="admin-form-group flex flex-col gap-1.5">
+                    <label className="admin-label font-medium text-xs text-admin-fg">
+                      Editorial Award Label <span className="admin-label-optional font-normal text-admin-muted text-[11px]">(e.g. Best overall, Best budget, Best battery)</span>
                     </label>
-                    <input name="label" className="admin-input" placeholder="e.g. Best overall" />
+                    <input name="label" className="admin-input w-full" placeholder="e.g. Best overall" />
                   </div>
 
-                  <div style={{ marginTop: 8 }}>
-                    <ConfirmFormButton className="admin-btn admin-btn-primary"
+                  <div className="pt-2">
+                    <ConfirmFormButton
+                      className="admin-btn admin-btn-primary"
                       dialogTitle="Add Product Pick?"
                       dialogDescription="Save this pick to the roundup? Modifying picks will send copy back to draft."
                       confirmText="Add / Update Pick"
@@ -246,20 +239,22 @@ export function RoundupEditorClient({ roundup, candidates, copy, error }: {
             <CardHeader>
               <div>
                 <CardTitle>Editorial Guide Copy</CardTitle>
-                <CardDescription>Requires at least two ranked picks. Drafted by LLM using the verified specs of each ranked pick.</CardDescription>
+                <CardDescription className="mt-1">Requires at least two ranked picks. Drafted by LLM using the verified specs of each ranked pick.</CardDescription>
               </div>
             </CardHeader>
             <CardContent>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div className="admin-flex admin-items-center admin-gap-3">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3">
                   {copy ? (
-                    <div className="admin-flex admin-items-center admin-gap-3">
-                      <span>Status:</span>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-xs text-admin-muted font-medium">Status:</span>
                       <StatusBadge status={copy.status} />
-                      <Link href={`/admin/content/${copy.id}`} className="admin-btn admin-btn-secondary admin-btn-sm">Open in Copy Studio</Link>
+                      <Link href={`/admin/content/${copy.id}`} className="admin-btn admin-btn-secondary admin-btn-sm font-medium">
+                        Open in Copy Studio
+                      </Link>
                     </div>
                   ) : (
-                    <div className="admin-text-muted">No copy generated for this roundup guide yet.</div>
+                    <div className="text-xs text-admin-muted">No copy generated for this roundup guide yet.</div>
                   )}
                 </div>
 
@@ -267,7 +262,7 @@ export function RoundupEditorClient({ roundup, candidates, copy, error }: {
                   {roundup.items.length >= 2 ? (
                     <GenerateButton pageType="roundup" pageKey={roundup.slug} back={back} hasCopy={!!copy} />
                   ) : (
-                    <div className="admin-text-sm admin-text-muted">Add at least 2 picks before generating roundup copy.</div>
+                    <div className="text-xs text-admin-muted">Add at least 2 picks before generating roundup copy.</div>
                   )}
                 </div>
               </div>

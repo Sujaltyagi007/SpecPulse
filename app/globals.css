@@ -1,59 +1,203 @@
-/* Base shared by every route. Public site styles live in app/(site)/site.css, admin styles in app/admin/admin.css. */
+@import "tailwindcss";
 
-:root {
-  --bg: #ffffff;
-  --fg: #0e1116;
-  --muted: #6b7280;
-  --border: #e7e9ee;
-  --surface: #f7f8fa;
-  --accent: #4f46e5;
-  --accent-fg: #ffffff;
-  --ok: #059669;
-  --warn: #9a6700;
-  --err: #cf222e;
+/* ── Custom Tailwind Theme Tokens (Site & Admin) ── */
+@theme inline {
+  /* Public Site Theme Tokens */
+  --color-bg: var(--bg);
+  --color-soft: var(--bg-soft);
+  --color-warm: var(--bg-warm);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-media: var(--media-bg);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-muted: var(--muted);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --shadow-card: var(--shadow);
+  --shadow-card-lg: var(--shadow-lg);
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-float-slow: float 10s ease-in-out infinite;
+  --animate-draw: draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) both;
+  --animate-scan: scan 3.2s linear 2.4s infinite;
+  --animate-rise: rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  /* Admin Console Theme Tokens */
+  --color-admin-bg: var(--admin-bg);
+  --color-admin-surface: var(--admin-surface);
+  --color-admin-fg: var(--admin-fg);
+  --color-admin-border: var(--admin-border);
+  --color-admin-border-subtle: var(--admin-border-subtle);
+  --color-admin-muted: var(--admin-muted);
+  --color-admin-muted-bg: var(--admin-muted-bg);
+  --color-admin-primary: var(--admin-primary);
+  --color-admin-primary-hover: var(--admin-primary-hover);
+  --color-admin-primary-fg: var(--admin-primary-fg);
+  --color-admin-secondary: var(--admin-secondary);
+  --color-admin-secondary-hover: var(--admin-secondary-hover);
+  --color-admin-secondary-fg: var(--admin-secondary-fg);
+  --color-admin-accent: var(--admin-accent);
+  --color-admin-accent-fg: var(--admin-accent-fg);
+  --color-admin-accent-subtle: var(--admin-accent-subtle);
+  --color-admin-card: var(--admin-card);
+  --color-admin-card-fg: var(--admin-card-fg);
+  --color-admin-ring: var(--admin-ring);
+  --color-admin-destructive: var(--admin-destructive);
+  --color-admin-destructive-fg: var(--admin-destructive-fg);
+  --color-admin-destructive-subtle: var(--admin-destructive-subtle);
+  --color-admin-destructive-border: var(--admin-destructive-border);
+  --color-admin-ok: var(--admin-ok);
+  --color-admin-ok-subtle: var(--admin-ok-subtle);
+  --color-admin-ok-border: var(--admin-ok-border);
+  --color-admin-warn: var(--admin-warn);
+  --color-admin-warn-subtle: var(--admin-warn-subtle);
+  --color-admin-warn-border: var(--admin-warn-border);
+  --radius-admin-sm: var(--admin-radius-sm);
+  --radius-admin: var(--admin-radius);
+  --radius-admin-lg: var(--admin-radius-lg);
+  --shadow-admin-sm: var(--admin-shadow-sm);
+  --shadow-admin: var(--admin-shadow);
+  --shadow-admin-md: var(--admin-shadow-md);
+  --shadow-admin-lg: var(--admin-shadow-lg);
+  --shadow-admin-xl: var(--admin-shadow-xl);
+  --text-admin-sm: 0.8125rem;
+  --font-admin: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
+/* ── Custom Keyframes & Animations ── */
+@keyframes float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -14px; }
+}
+
+@keyframes draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes scan {
+  from { stroke-dashoffset: 1.12; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes rise {
+  from { opacity: 0; translate: 0 16px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float, .animate-float-slow, .animate-scan, .animate-rise { animation: none; }
+  .animate-draw { animation: none; stroke-dashoffset: 0; }
+}
+
+/* ── Custom Theme Variant ── */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *, [data-mode='dark'], [data-mode='dark'] *));
+
+/* ── Custom Base Styles ── */
+@layer base {
   :root {
-    --bg: #0a0c10;
-    --fg: #eef0f4;
-    --muted: #8b92a0;
-    --border: #222733;
-    --surface: #12151c;
-    --accent: #818cf8;
-    --accent-fg: #0a0c10;
-    --ok: #34d399;
-    --warn: #d29922;
-    --err: #f85149;
+    --bg: #ffffff;
+    --fg: #0e1116;
+    --muted: #6b7280;
+    --border: #e7e9ee;
+    --surface: #f7f8fa;
+    --accent: #4f46e5;
+    --accent-fg: #ffffff;
+    --ok: #059669;
+    --warn: #9a6700;
+    --err: #cf222e;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0a0c10;
+      --fg: #eef0f4;
+      --muted: #8b92a0;
+      --border: #222733;
+      --surface: #12151c;
+      --accent: #818cf8;
+      --accent-fg: #0a0c10;
+      --ok: #34d399;
+      --warn: #d29922;
+      --err: #f85149;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  a { color: var(--accent); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-weight: 600; color: var(--muted); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  td { overflow-wrap: anywhere; }
+
+  input, select, textarea {
+    font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; width: 100%;
+  }
+
+  .muted { color: var(--muted); }
+  .badge { display: inline-block; font-size: 0.75rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); }
+  .badge.ok { color: var(--ok); border-color: var(--ok); }
+  .badge.warn { color: var(--warn); border-color: var(--warn); }
+  .badge.err { color: var(--err); border-color: var(--err); }
+  .issues { margin: 4px 0 0; padding-left: 18px; font-size: 0.875rem; }
+  .issues .err { color: var(--err); }
+  .issues .warn { color: var(--warn); }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+}
+
+/* ── View Transitions (Circular Theme Reveal Animation) ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
   }
 }
 
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--fg);
-  font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+/* ── Theme Toggle Button Micro-interactions ── */
+.theme-toggle-btn {
+  position: relative;
+  user-select: none;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
-a { color: var(--accent); }
-
-table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
-th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
-th { font-weight: 600; color: var(--muted); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.03em; }
-td { overflow-wrap: anywhere; }
-
-input, select, textarea {
-  font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; width: 100%;
+.theme-toggle-btn:active {
+  transform: scale(0.92);
 }
 
-.muted { color: var(--muted); }
-.badge { display: inline-block; font-size: 0.75rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); }
-.badge.ok { color: var(--ok); border-color: var(--ok); }
-.badge.warn { color: var(--warn); border-color: var(--warn); }
-.badge.err { color: var(--err); border-color: var(--err); }
-.issues { margin: 4px 0 0; padding-left: 18px; font-size: 0.875rem; }
-.issues .err { color: var(--err); }
-.issues .warn { color: var(--warn); }
-.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.theme-toggle-icon {
+  display: inline-grid;
+  place-items: center;
+  transform-origin: center;
+}
+

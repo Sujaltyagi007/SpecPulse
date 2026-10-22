@@ -60,12 +60,8 @@ export default async function ArticlePage({ params }: Props) {
         <CalendarDays size={14} aria-hidden /> Published {formatDate(a.publishedAt)}
         {a.updatedAt.getTime() - a.publishedAt.getTime() > 86_400_000 && ` · Updated ${formatDate(a.updatedAt)}`}
       </p>
-      {a.hasImage && (
-        // eslint-disable-next-line @next/next/no-img-element -- served by our own cached route
-        <img className="article-cover" src={coverUrl(a.slug, a.updatedAt)} alt={a.imageAlt} width={1200} height={630} />
-      )}
+      {a.hasImage && (<img className="article-cover" src={coverUrl(a.slug, a.updatedAt)} alt={a.imageAlt} width={1200} height={630} />)}
       <p className="lead">{a.summary}</p>
-
       <div className="article-body">
         <ArticleBody markdown={a.bodyMd} sourceCount={a.sources.length} />
       </div>
@@ -95,9 +91,7 @@ export default async function ArticlePage({ params }: Props) {
           <ol className="article-sources">
             {a.sources.map((s, i) => (
               <li key={s.url} id={`source-${i + 1}`}>
-                <a href={s.url} target="_blank" rel="noopener noreferrer nofollow">
-                  {s.title || s.url}
-                </a>
+                <a href={s.url} target="_blank" rel="noopener noreferrer nofollow">{s.title || s.url}</a>
               </li>
             ))}
           </ol>
