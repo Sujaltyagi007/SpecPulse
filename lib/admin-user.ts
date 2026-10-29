@@ -1,16 +1,13 @@
 import { prisma } from '@/lib/db';
-import { headers } from 'next/headers';
 import { parseTheme } from '@/lib/admin-theme';
+import { getAdminAuth } from '@/lib/auth-guard';
 
 export async function currentUsername(): Promise<string> {
-  const auth = (await headers()).get('authorization') ?? '';
-  const [scheme, encoded] = auth.split(' ');
-  if (scheme === 'Basic' && encoded) {
-    const decoded = atob(encoded);
-    const sep = decoded.indexOf(':');
-    if (sep > 0) return decoded.slice(0, sep);
+  const authContext = await getAdminAuth();
+  if (authContext.authenticated && authContext.user?.username) {
+    return authContext.user.username;
   }
-  return process.env.ADMIN_USER ?? 'admin';
+  return process.env.ADMIN_USER ?? 'SuperAdmin';
 }
 
 export interface AdminProfileView {
@@ -27,7 +24,7 @@ export async function currentProfile(): Promise<AdminProfileView> {
   return {
     username,
     displayName: row?.displayName || username,
-    role: row?.role ?? null,
+    role: row?.role ?? 'Administrator',
     avatar: row?.avatar ?? null,
     theme: parseTheme(row?.theme),
   };

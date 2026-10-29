@@ -5,7 +5,8 @@ import { spring } from './motion';
 import { useAdmin } from './theme-root';
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { ExternalLink, KeyRound, Palette, UserRound } from 'lucide-react';
+import { ExternalLink, KeyRound, LogOut, Palette, UserRound } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 
 export function UserMenu() {
   const { identity } = useAdmin();
@@ -86,6 +87,23 @@ export function UserMenu() {
                 <ExternalLink size={15} />
                 View public site
               </Link>
+            </motion.div>
+
+            <div className="my-1 border-t border-admin-border" />
+
+            <motion.div initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} transition={{ ...spring, delay: 0.16 }}>
+              <button
+                type="button"
+                className="admin-menu-item flex w-full items-center gap-2.5 rounded-admin-sm px-2.5 py-1.5 text-sm text-rose-400 transition-colors hover:bg-rose-500/10 text-left"
+                role="menuitem"
+                onClick={() => {
+                  setOpen(false);
+                  signOut({ callbackUrl: '/admin/login' });
+                }}
+              >
+                <LogOut size={15} />
+                Sign out
+              </button>
             </motion.div>
           </motion.div>
         )}

@@ -9,23 +9,42 @@ URL for migrations (`prisma.config.ts`). On Vercel, the Neon integration sets bo
 
 ```
 app/(site)/            public pages: home, /[category]/[product] (static + ISR, Product/FAQ JSON-LD)
-app/admin/             review queue, product editor, server actions (HTTP basic auth via proxy.ts)
+app/admin/             review queue, product editor, server actions (NextAuth session & login form at /admin/login)
+app/api/auth/          NextAuth session authentication endpoints
+app/api/admin/auth/    JWT Bearer token issuance and role verification
 app/api/cron/          refresh-prices, publish (Vercel Cron, see vercel.json)
 app/sitemap.ts, robots.ts
-lib/                   db, validation gate, affiliate link injection, SerpApi ingest, paced publisher
+lib/                   db, validation gate, affiliate link injection, SerpApi ingest, paced publisher, auth, jwt
 prisma/                schema, migrations, seed
 scripts/               local CLI versions of the cron jobs
+proxy.ts               Next.js Edge guard protecting /admin and /api/admin with JWT Bearer & NextAuth session verification
 ```
 
 ## Setup
 
 ```bash
-cp .env.example .env        # Neon DATABASE_URL (pooled) + DATABASE_URL_UNPOOLED (direct), SERPAPI_API_KEY, ADMIN_*, CRON_SECRET
+cp .env.example .env        # Neon DATABASE_URL, SERPAPI_API_KEY, ADMIN_USER, ADMIN_PASSWORD, AUTH_SECRET
 pnpm install
 pnpm db:deploy              # apply migrations
 pnpm db:seed                # wireless-earbuds category, 2 products, Amazon affiliate program
-pnpm dev                    # http://localhost:3000, admin at /admin
+pnpm dev                    # http://localhost:3000, admin login at /admin/login
 ```
+
+## Admin Authentication & Security
+
+SpecPulse uses a dual-layer security architecture:
+
+1. **NextAuth (Auth.js) Session & Form**:
+   - Web console login form at `/admin/login` with brute-force rate-limiting and constant-time credential verification.
+   - Secure encrypted JWT session cookies (`httpOnly`, `sameSite: lax`, `secure` in production).
+   - Sign-out integration in the admin header user menu.
+
+2. **JWT Bearer Token Authentication & Authorization**:
+   - For automated scripts, mobile clients, and REST APIs.
+   - Obtain a token: `POST /api/admin/auth/token` with `{ "username": "SuperAdmin", "password": "..." }` or with an active session.
+   - Authorized requests: Include header `Authorization: Bearer <token>`.
+   - Role authorization: All tokens strictly require and verify `role: "admin"`.
+   - Verify token: `GET /api/admin/auth/verify`.
 
 ## Content workflow
 
@@ -70,7 +89,7 @@ pnpm content:generate missing 10
 | `pnpm ingest:prices` | `/api/cron/refresh-prices` (06:00 UTC) | SerpApi Google Shopping per product, conservative title match, upsert offers + price history |
 | `pnpm publish:batch` | `/api/cron/publish` (07:30 UTC) | Paced approved → published |
 | `pnpm validate` | | Report fact-check results for all products |
-| `pnpm test` | | Unit tests: matching, GTIN, affiliate links, freshness |
+| `pnpm test` | | Unit tests: matching, GTIN, affiliate links, freshness, authentication |
 
 `product.model` must include the generation number when one exists ("AirPods Pro 2", not "AirPods Pro"):
 the matcher rejects listings whose model continues with a digit, so it can't attach an AirPods Pro 3 price to a Pro 2 page.

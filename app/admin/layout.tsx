@@ -1,6 +1,7 @@
 import './admin.css';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { headers } from 'next/headers';
 import { prisma } from '@/lib/db';
 import type { Metadata } from 'next';
 import { Shield } from 'lucide-react';
@@ -19,6 +20,18 @@ export const metadata: Metadata = {
 export const maxDuration = 300;
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const headersList = await headers();
+  const pathname = headersList.get('x-pathname') || '';
+
+  // Render standalone shell for the login page without the admin navigation bar
+  if (pathname.startsWith('/admin/login')) {
+    return (
+      <div className="admin-theme-root min-h-screen bg-admin-bg font-admin tracking-[-0.011em] text-admin-fg antialiased">
+        {children}
+      </div>
+    );
+  }
+
   const [profile, reviewCount] = await Promise.all([
     currentProfile(),
     prisma.product.count({ where: { status: 'review' } }),
