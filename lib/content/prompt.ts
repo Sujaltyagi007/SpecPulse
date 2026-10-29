@@ -22,7 +22,6 @@ Rules:
 - When FACTS lacks a spec for a product, say it isn't listed rather than guessing.
 - Plain prose only: no markdown, headings, bullet lists or URLs.
 - Short and correct beats long and padded.
-
 Output fields:
 - summary: one or two sentences that directly answer the page's main question. It is shown first on the page and used for search snippets and AI answers, so lead with the answer.
 - body: two to four short paragraphs separated by a blank line.
